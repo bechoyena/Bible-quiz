@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>መጽሐፍ ቅዱስ ጥያቄና መልስ ቦት</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; color: #2c3e50; padding: 15px; text-align: center; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); max-width: 450px; margin: 20px auto; border: 1px solid #e1e8ed; text-align: left; }
+        .hero-title { text-align: center; color: #0088cc; font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+        .hero-subtitle { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 25px; }
+        h3 { color: #2c3e50; font-size: 18px; border-bottom: 2px solid #f0f4f8; padding-bottom: 8px; margin-top: 20px; }
+        p, li { font-size: 15px; line-height: 1.6; color: #555; }
+        ul { padding-left: 20px; }
+        .btn-close { display: block; width: 100%; background: #0088cc; color: white; padding: 14px; margin-top: 30px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; text-align: center; transition: background 0.2s; }
+        .btn-close:hover { background: #006699; }
+        .feature-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #0088cc; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="hero-title">📖 የመጽሐፍ ቅዱስ ጥያቄና መልስ</div>
+    <div class="hero-subtitle">የእግዚአብሔርን ቃል የምንማርበትና እውቀታችንን የምንመዝንበት መድረክ</div>
+    
+    <h3>🎯 የቦቱ ዋና አላማ</h3>
+    <p>ይህ ቦት ተጠቃሚዎች የእግዚአብሔርን ቃል (ቅዱሳት መጻሕፍትን) በየቀኑ እና በየምዕራፉ በፈተና መልክ እየመለሱ እውቀታቸውን እንዲያሳድጉና ቃሉን በልባቸው እንዲያሳድሩ የተዘጋጀ መንፈሳዊ መተግበሪያ ነው።</p>
+
+    <h3>🛠 ቦቱ እንዴት ይሰራል?</h3>
+    <div class="feature-box">
+        <strong>1. ምድብ መምረጥ፦</strong> ቦቱ ላይ ሲገቡ <b>ብሉይ ኪዳን</b>፣ <b>አዲስ ኪዳን</b> ወይም <b>አጠቃላይ</b> የሚሉ አማራጮችን ያገኛሉ።
+    </div>
+    <div class="feature-box">
+        <strong>2. የክፍል ምርጫ፦</strong> የመረጡትን ምድብ ሲጫኑ በየጊዜው አዲስ የሚለቀቁ የክፍል/የምዕራፍ ፈተናዎችን (ለምሳሌ፡ ዘፍጥረት 1-15) በዝርዝር ያገኛሉ።
+    </div>
+    <div class="feature-box">
+        <strong>3. ፈተና መጀመር፦</strong> የሚፈልጉትን ክፍል ሲጫኑ ጥያቄዎቹ በሚኒ አፕ (Mini App) መልክ በውብ አቀራረብና በሰዓት ተከታትለው ይመጡልዎታል።
+    </div>
+
+    <h3>✨ ዋና ዋና ጥቅሞች</h3>
+    <ul>
+        <li>በየጊዜው የሚዘምኑና አዳዲስ የሚጨመሩ ጥያቄዎች።</li>
+        <li>ለእያንዳንዱ ጥያቄ የተሰጠ የጊዜ ገደብ (Timer)።</li>
+        <li>ፈተናውን እንደጨረሱ ውጤትዎን ወዲያውኑ ማየት መቻልዎ።</li>
+    </ul>
+
+    <button class="btn-close" onclick="closeApp()">ወደ ቦቱ ተመለስ</button>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function closeApp() {
+        tg.close();
+    }
+</script>
+</body>
+</html>

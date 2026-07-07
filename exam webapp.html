@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>የአዲስ ኪዳን ጥልቅ ጥያቄዎች ፈተና</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("0uwHVjyuXtDRMTr22"); // የአንተ Public Key
+        })();
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        body { padding-bottom: 120px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8 transition-all duration-300">
+        
+        <div id="registration-section" class="space-y-6">
+            <div class="text-center">
+                <h1 class="text-3xl font-extrabold text-indigo-700 mb-2">የምዝገባ ፎርም</h1>
+                <p class="text-slate-500 text-sm">እባክዎ መጀመሪያ ምዝገባዎን ያጠናቅቁ</p>
+            </div>
+            
+            <form id="registration-form" class="space-y-4" onsubmit="validateAndGenerate(event)">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">1. ሙሉ ስም</label>
+                    <input type="text" id="reg_full_name" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ሙሉ ስምዎን ያስገቡ...">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">2. የህብረት ስም</label>
+                    <input type="text" id="reg_group_name" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="የህብረቱን ስም ያስገቡ...">
+                    <div id="group-error-msg" class="hidden text-rose-600 font-bold text-xs mt-1 bg-rose-50 p-2 rounded border border-rose-200">የተሳሳተ መረጃ! የህብረቱ ስም 'ካቦድ' መሆን አለበት።</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">3. በህብረቱ ውስጥ ያለው ድርሻ</label>
+                    <input type="text" id="reg_role" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ምሳሌ፡ አስተባባሪ፣ አባል...">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">4. ስልክ ቁጥር</label>
+                    <input type="tel" id="reg_phone" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="09........">
+                </div>
+                
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition duration-200 mt-2">
+                    ፎርሙን አስገባ
+                </button>
+            </form>
+
+            <div id="resultBox" class="hidden space-y-4 p-5 bg-indigo-50 border-2 border-indigo-200 rounded-xl text-center">
+                <div id="countdown-timer" class="text-xs text-amber-600 font-bold mb-1">ኮዱን ለመቅዳት የቀረው ጊዜ፡ 30 ሰከንድ</div>
+                
+                <div id="code-area" class="flex items-center justify-center space-x-3 bg-white p-3 rounded-lg border">
+                    <span id="examCode" class="text-2xl font-black text-indigo-900 tracking-widest"></span>
+                    <button id="copyBtn" onclick="copyCodeAndProceed()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1 transition">
+                        <span>ይቅዱ</span>
+                    </button>
+                </div>
+
+                <button id="retryBtn" onclick="resetRegistration()" class="hidden w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-lg shadow transition duration-200">
+                    ጊዜ አልቋል! እንደገና ይመዝገቡ
+                </button>
+            </div>
+        </div>
+
+        <div id="verification-section" class="hidden space-y-6">
+            <div class="text-center">
+                <h1 class="text-2xl font-extrabold text-indigo-700 mb-2">የኮድ ማረጋገጫ ገጽ</h1>
+                <p class="text-slate-500 text-sm">እባክዎ የቀዱትን የመፈተኛ ኮድ እዚህ ያስገቡ</p>
+            </div>
+            
+            <form id="verification-form" class="space-y-4" onsubmit="verifyCodeAndStart(event)">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">የመፈተኛ ኮድ</label>
+                    <input type="text" id="verify_code" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition text-center text-xl tracking-widest font-bold" placeholder="የቀዱትን ኮድ እዚህ ላይ ይለጥፉ...">
+                    <div id="verify-error-msg" class="hidden text-rose-600 font-bold text-xs mt-1 bg-rose-50 p-2 rounded border border-rose-200 text-center">የተሳሳተ የመፈተኛ ኮድ! እባክዎ በትክክል ያረጋግጡ።</div>
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition duration-200 mt-2">
+                    አረጋግጥና ፈተናውን ጀምር
+                </button>
+            </form>
+        </div>
+
+        <div id="quiz-section" class="hidden space-y-6">
+            <div class="flex justify-between items-center border-b pb-4 border-slate-100">
+                <div class="text-sm font-medium text-slate-500">
+                    ጥያቄ: <span id="current-question-num" class="text-indigo-600 font-bold text-lg">1</span>/60
+                </div>
+                <div class="flex items-center space-x-2 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-ping"></span>
+                    <span class="text-sm font-bold text-amber-700" id="timer">20s</span>
+                </div>
+            </div>
+            <h2 id="question-text" class="text-xl font-bold text-slate-800 leading-relaxed min-h-[60px]"></h2>
+            <div id="options-container" class="grid grid-cols-1 gap-3.5 mt-4"></div>
+            <div id="answer-alert" class="hidden text-center font-bold p-3 rounded-lg transition-all"></div>
+        </div>
+
+        <div id="result-section" class="hidden space-y-6 text-center">
+            <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold text-slate-800">የፈተናው ማጠቃለያ</h2>
+            
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left max-w-md mx-auto space-y-2 text-sm">
+                <p><span class="font-semibold text-slate-600">የተፈታኝ ስም:</span> <span id="res-name" class="font-bold text-slate-800"></span></p>
+                <p><span class="font-semibold text-slate-600">የህብረት ስም:</span> <span id="res-group" class="font-bold text-slate-800"></span></p>
+                <p><span class="font-semibold text-slate-600">በህብረቱ ያለዎት ድርሻ:</span> <span id="res-role" class="font-bold text-slate-800"></span></p>
+            </div>
+
+            <div class="text-2xl font-bold mt-4">
+                Delta ውጤት: <span id="score-display" class="text-emerald-600 text-3xl">0</span> / 60
+            </div>
+            <p class="text-xs text-slate-400">ውጤትዎ በራስ-ሰር ወደ nardosdemissie392@gmail.com ተልኳል።</p>
+            <hr class="border-slate-100 my-4">
+            <div id="feedback-trigger-zone">
+                <button onclick="showFeedbackInput()" class="text-indigo-600 hover:text-indigo-800 font-semibold underline text-sm transition">አስተያየት ለመስጠት እዚህ ይጫኑ</button>
+            </div>
+            <div id="feedback-zone" class="hidden max-w-md mx-auto space-y-3 pt-2">
+                <textarea id="feedback-text" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="እባክዎ እዚህ ላይ አስተያየትዎን ይጻፉ..."></textarea>
+                <button onclick="submitFeedback()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow transition">አስተያየት ላክ</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Supabase ግንኙነት ማዋቀር
+        const SUPABASE_URL = "https://jdusgofvctxmfgrnrgjq.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkdXNnb2Z2Y3R4bWZncm5yZ2pxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjgwMjQ3MiwiZXhwIjoyMDk4Mzc4NDcyfQ.J-aBPwvBOD7PPb9YTXd28yuUnuXhp3xARslADs31MNY";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const SERVICE_ID = "service_umghqqj";
+        const TEMPLATE_ID = "template_nadmc5u";
+
+        let score = 0;
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let registrationTimer;
+        let timeLeft = 20;
+        let isAnswered = false;
+
+        let generatedSystemCode = ""; 
+        let registeredName = ""; 
+
+        const questions = [
+            { q: "በጽዮን ተራራ ላይ ከበጉ ጋር የቆሙት 144,000 ሰዎች በግንባራቸው ምን ተጽፎ ነበር?", a: ["የበጉና የአባቱ ስም", "ኢየሱስ", "ሃሌ ሉያ", "መንፈስ ቅዱስ"], c: 0 },
+            { q: "በይሁዳ መልእክት መሠረት ከዲያብሎስ ጋር ጋር ስለ ሙሴ ሥጋ የተከራከረው መልዓክ  የቱ ነው?", a: ["ገብርኤል", "ሚካኤል", "ክሩቤል", "ኤልያስ"], c: 1 },
+            { q: "በማቴዎስ ወንጌል የጌታ ትውልድ ሐረግ ከማን ይጀምራል?", a: ["ከአዳም", "ከኖኅ", "ከአብርሃም", "ከዳዊት"], c: 2 },
+            { q: "በሉቃስ ወንጌል የጌታ ትውልድ ሐረግ ወደ ኋላ ተቆጥሮ የት ላይ ያበቃል?", a: ["አብርሃም", "ዳዊት", "እግዚአብሔር", "አዳም"], c: 2 },
+            { q: "ጌታችን በፊልጶስ ቂሳርያ 'ሰዎች የሰውን ልጅ ማን ይሉታል?' ብሎ የጠየቀው በየትኛው ወንጌል ላይ ነው?", a: ["ማቴዎስ", "ማርቆስ", "ሉቃስ", "ዮሐንስ"], c: 0 },
+            { q: "በአዲሲቱ ኢየሩሳሌም ውስጥ የሌለው ነገር ምንድን ነው?", a: ["ወርቅ", "መብራት (ፀሐይና ጨረቃ)", "ደስታ", "የሕይወት ዛፍ"], c: 1 },
+            { q: "ክርስቶስ በዕብራውያን መልእክት መሠረት ሊቀ ካህናት የተባለ በማን ስርዓት ነው?", a: ["በአሮን", "በመልከ ጼዴቅ", "በሌዊ", "በሙሴ"], c: 1 },
+            { q: "ከአራቱ ወንጌላት መካከል። 'አማኑኤል' የሚለውን ስም ጠቅሶ የሚተረጉመው የትኛው ወንጌል ነው?", a: ["ማርቆስ", "ሉቃስ", "ዮሐንስ", "ማቴዎስ"], c: 3 },
+            { q: "የጌታችንን ልደት ተከትሎ ሰብአ ሰገል ሲመጡ በኢየሩሳሌም የነበረው ንጉሥ ማን ይባላል?", a: ["ሄሮድስ አንቲጳስ", "ታላቁ ሄሮድስ", "ሄሮድስ አግሪጳ", "ፊልጶስ"], c: 1 },
+            { q: "ከሰባቱ አብያተ ክርስቲያናት 'የመጀመሪያውን ፍቅርህን ትተሃል' የተባለችው የትኛዋ ናት?", a: ["ሰምርኔስ", "ኤፌሶን", "ሎዶቅያ", "ሰርዴስ"], c: 1 },
+            { q: "በዮሐንስ ወንጌል መሠረት ጌታ መጀመሪያ ያደረገው ተአምር በየትኛው ከተማ ነበር?", a: ["በናዝሬት", "በቅፍርናሆም", "በገሊላ ቃና", "በኢየሩሳሌም"], c: 2 },
+            { q: "በሐዋርያት ሥራ መጽሐፍ መሠረት በሰማርያ ከተማ በጠንቋይነቱ ሰዎችን ያስደንቅ የነበረው ማን ነው?", a: ["ሰሎሞን", "ሲሞን", "ኤልማስ", "ባርያሱስ"], c: 1 },
+            { q: "ልክ ጳውሎስ 'የትውልድ አገሬ ናት' ብሎ የጠቀሳት ጠርሴስ በየትኛው ክፍለ ሀገር ትገኛለች?", a: ["ገላትያ", "ኪልቅያ", "ማቅዶንያ", "እስያ"], c: 1 },
+            { q: "በራእይ መጽሐፍ መሠረት ለስንት አብያተ ክርስቲያናት ነው መልእክት የተጻፈው?", a: ["3", "7", "14", "24"], c: 1 },
+            { q: "ጳውሎስ በሮሜ መልእክቱ ላይ ያመሰገናትና 'የክርስቲያን ማኅበር አገልጋይ' ይላት የነበረችው ሴት ማን ናት?", a: ["ጵርስቅላ", "ፌቤን", "ልድያ", "ዶርቃ"], c: 1 },
+            { q: "ከሚከተሉት መጻሕፍት ውስጥ 'ፍቅር' የሚለውን ቃል በስፋት የገለጸው የትኛው ምዕራፍ ነው?", a: ["1 ቆሮ 13", "ሮሜ 8", "ኤፌሶን 4", "1 ዮሐ 4"], c: 0 },
+            { q: "ጌታችን በመስቀል ላይ ሳለ ያሰማቸው ሰባቱ ቃላት በሙሉ የተመዘገቡት በየትኛው ወንጌል ነው?", a: ["ሉቃስ", "ዮሐንስ", "በአንድ ወንጌል ብቻ አልተጻፉም", "ማቴዎስ"], c: 2 },
+            { q: "ጌታ በደብረ ታቦር ሲቀየር አብረውት የታዩት ሙሴና ኤልያስ ሲሆኑ፣ ይህን ክስተት ያልመዘገበው ወንጌል?", a: ["ማቴዎስ", "ማርቆስ", "ሉቃስ", "ዮሐንስ"], c: 3 },
+            { q: "በዮሐንስ ራእይ መሠረት የስድስት መቶ ስልሳ ስድስት (666) ቁጥር የማን ቁጥር ነው ተብሏል?", a: ["የመልአክ", "የአውሬው/የሰው ቁጥር", "የከተማ", "የባሕር"], c: 1 },
+            { q: "ጳውሎስ ለፊልሞና በፃፈው መልእክት ስለ ማን ነው የሚያወራው?", a: ["አናንያ", "አናሲሞስ", "ጥሮፊሞስ", "ቲኪቆስ"], c: 1 },
+            { q: "በእስጢፋኖስ መወገር ወቅት የሰማዕቱን ልብስ ይጠብቅ ዘንድ ልብሳቸውን በማን እግር አጠገብ ነበር ያስቀመጡት?", a: ["በቀያፋ", "በሳውል", "በገማልያል", "በጴጥሮስ"], c: 1 },
+            { q: "በሐዋርያት ሥራ መሠረት ቅዱስ ጳውሎስ በየትኛው ደሴት ላይ ነው እባብ ነክሶት ያልሞተው?", a: ["ቆጵሮስ", "ቀሬጣ", "መሊጤ (ማልታ)", "ጳጥሞስ"], c: 2 },
+            { q: "ጴጥሮስ በኢዮጴ ከተማ ከሞት ያስነሳትና በበጎ ሥራዋ የምትታወቀው ሴት ማን ናት?", a: ["ጣቢታ (ዶርቃ)", "ልድያ", "ሮዳ", "ማርታ"], c: 0 },
+            { q: "ያዕቆብ በመልእክቱ 'ያለ ሥራ የሞተ ነው' ሲል የገለጸው ምንድን ነው?", a: ["ተስፋ", "ፍቅር", "እምነት", "ጸሎት"], c: 2 },
+            { q: "ጳውሎስ በቆሮንቶስ ከተማ ድንኳን በመስፋት አብረዋቸው ይሠሩ የነበሩት ባልና ሚስት እነማን ናቸው?", a: ["አናንያና ሰጲራ", "አቂላና ጵርስቅላ", "ፊሊክስና ድሩሲላ", "አንድሮኒቆስና ዩልያ"], c: 1 },
+            { q: "በሐዋርያት ሥራ 15 ላይ በተደረገው የመጀመሪያው የኢየሩሳሌም ጉባኤ ላይ ውሳኔውን ያጠቃለለው ሐዋርያ ማን ነው?", a: ["ጴጥሮስ", "ዮሐንስ", "የጌታ ወንድም ያዕቆብ", "ጳውሎስ"], c: 2 },
+            { q: "ጌታችን ኢየሱስ ክርስቶስ የተሰቀለበት 'ጎልጎታ' ትርጓሜው ምንድነው?", a: ["የራስ ቅል ስፍራ", "የፍርድ አደባባይ", "የለቅሶ ሸለቆ", "የወይራ ተራራ"], c: 0 },
+            { q: "በማርቆስ ወንጌል መሠረት ጌታችን በመስቀል ላይ ሳለ 'ኤሎሄ ኤሎሄ ለማ ሰበቅታኒ' ሲል ምን ማለቱ ነው?", a: ["አምላኬ አምላኬ ለምን ተውኸኝ?", "አባት ሆይ ይቅር በላቸው", "ተፈጸመ", "ነፍሴን በእጅህ እሰጣለሁ"], c: 0 },
+            { q: "ከአራቱ ወንጌላት መካከል። በመጀመሪያው ምዕራፍ 'ቃልም ሥጋ ሆነ' ብሎ ስለ ክርስቶስ መለኮትነት የሚጀምረው የትኛው ነው?", a: ["ማቴዎስ", "ማርቆስ", "ሉቃስ", "ዮሐንስ"], c: 3 },
+            { q: "ጳውሎስ 'የእምነት እውነተኛ ልጅ' እያለ በሁለቱ መልእክቶቹ የጠራው ወጣት መሪ ማን ነው?", a: ["ቲቶ", "ጢሞቴዎስ", "ሲላስ", "በርናባስ"], c: 1 },
+            { q: "በማቴዎስ 27 መሠረት ይሁዳ አስቆሮታዊው ጌታን አሳልፎ የሰጠበትን 30 ብር መልሶ የት ነው የጣለው?", a: ["በጌቴሴማኒ", "በቤተ መቅደስ", "በገዢው ግቢ", "በቀያፋ ቤት"], c: 1 },
+            { q: "ሰባተኛው ማኅተም በተፈታ ጊዜ በሰማይ ለምን ያህል ጊዜ ዝምታ ሆነ?", a: ["ለአንድ ቀን", "ለሦስት ቀን", "ለእኩለ ሰዓት", "ለአንድ ሰዓት"], c: 2 },
+            { q: "የመጽሐፈ ራዕይ የመጨረሻ ቃል ምንድን ነው?", a: ["ሃሌ ሉያ", "ማራናታ", "አሜን", "ሰላም"], c: 2 },
+            { q: "ራዕዩን ላየው ለዮሐንስ 'እነሆ በቶሎ እመጣለሁ' ያለው ማን ነው?", a: ["ኢየሱስ ክርስቶስ", "መልአኩ", "ጴጥሮስ", "ኤልያስ"], c: 0 },
+            { q: "ክርስቶስ በዮሐንስ ወንጌል ላይ 'እኔ መንገድና እውነት ... ነኝ' ካለ በኋላ ለማን ነው የመለሰለት?", a: ["ለፊሊጶስ", "ለቶማስ", "ለጴጥሮስ", "ለይሁዳ (የያዕቆብ ልጅ)"], c: 1 },
+            { q: "ጳውሎስ 'መለከት ይነፋል ሙታንም የማይበሰብሱ ሆነው ይነሣሉ' ብሎ የጻፈው ለየትኞቹ ምዕመናን ነው?", a: ["ለሮሜ", "ለተሰሎንቄ", "ለቆሮንቶስ", "ለኤፌሶን"], c: 2 },
+            { q: "በሐዋርያት ሥራ መሠረት መጀመሪያ በአንጾኪያ ከተማ የተሰጠው አዲስ ስም ምን ነበር?", a: ["የመንግሥቱ ልጆች", "ክርስቲያን", "አማኞች", "የመንገዱ ሰዎች"], c: 1 },
+            { q: "ጳውሎስ 'ከእስያ አብያተ ክርስቲያናት ሰላምታ ያቀርቡላችኋል' ሲል የጠቀሰው በየትኛው መልእክቱ ነው?", a: ["1 ቆሮንቶስ", "ሮሜ", "ገላትያ", "ፊልጵስዩስ"], c: 0 },
+            { q: "ጌታችን በዮሐንስ ወንጌል 7 ላይ 'ማንም የተጠማ ቢኖር ወደ እኔ ይምጣ' ያለው በምን ዕለት ነበር?", a: ["በፋሲካ ማግስት", "በበዓለ ሰባ አጋማሽ", "በበዓሉ ታላቅ የመጨረሻ ቀን", "በሰንበት ቀን"], c: 2 },
+            { q: "በራእይ መጽሐፍ መሠረት ቅዱስ ዮሐንስ በግዞት የነበረባት ደሴት ማን ትባላለች?", a: ["ቀሬጣ", "ቆጵሮስ", "ፍጥሞ", "ሲሲሊ"], c: 2 },
+            { q: "ጳውሎስ በኤፌሶን መልእክቱ 'የእግዚአብሔርን ዕቃ ጦር ሁሉ ልበሱ' ሲል የመከላከያ ጋሻ አድርጎ የጠቀሰው ምንድነው?", a: ["የጽድቅ ጥሩር", "የእምነት ጋሻ", "የደኅንነት ራስ ቁር", "የእውነት መታጠቂያ"], c: 1 },
+            { q: "በሉቃስ ወንጌል ምዕራፍ 24 መሠረት ትንሣኤውን ሳያውቁ ወደ ኤማሁስ ይጓዙ ከነበሩት ሁለት ደቀ መዛሙርት የአንዱ ስም ማን ነበር?", a: ["ቀለዮጳ", "ናትናኤል", "ኒቆዲሞስ", "አልዓዛር"], c: 0 },
+            { q: "የአውሬው ቁጥር ስንት ነው?", a: ["777", "616", "666", "999"], c: 2 },
+            { q: "ታላቂቱ ባቢሎን በምን ተመስላለች?", a: ["በዘንዶ", "በጋለሞታ ሴት", "በተራራ", "በጥልቁ"], c: 1 },
+            { q: "ሰይጣን ለስንት ዓመት ታስሮ ወደ ጥልቁ ይጣላል?", a: ["ለሰባት ዓመት", "ለዘላለም", "ለአንድ ሺህ ዓመት", "ለአራት መቶ ዓመት"], c: 2 },
+            { q: "በሐዋርያት ሥራ መሠረት፣ የቆርኔሌዎስን ቤት ለመጎብኘት ጴጥሮስን ያዘጋጀው በራእይ የታየው ምን ነበር?", a: ["የወረደ ታላቅ ሸማ በውስጡ አራት እግር ያላቸው እንስሳት ያሉበት", "የሚነድ ቁጥቋጦ", "መለኮታዊ መብረቅ", "ከሰማይ የወረደ መጽሐፍ"], c: 0 },
+            { q: "ጳውሎስ በሮሜ መልእክቱ 'ሁሉ ኃጢአትን አድርገዋል የእግዚአብሔርም ክብር ጎድሏቸዋል' የሚለው በስንተኛው ምዕራፍ ነው?", a: ["ምዕራፍ 1", "ምዕራፍ 3", "ምዕራፍ 5", "ምዕራፍ 8"], c: 1 },
+            { q: "አዲሲቱ ኢየሩሳሌም ስንት ደጆች አሉአት?", a: ["ሰባት", "አሥራ ሁለት", "አራት", "ሦስት"], c: 1 },
+            { q: "በሐዋርያት ሥራ 8 መሠረት የኢትዮጵያዊው ጃንደረባ ያነበው የነበረው የትኛውን የትንቢት መጽሐፍ ነበር?", a: ["ኤርምያስ", "ሕዝቅኤል", "ኢሳይያስ", "ዳንኤል"], c: 2 },
+            { q: "ዮሐንስ ራዕዩን ያየው የት ሆኖ ነበር?", a: ["በኢየሩሳሌም", "በኤፌሶን", "በፍጥሞ ደሴት", "በቆሮንቶስ"], c: 2 },
+            { q: "በእግዚአብሔር ዙፋን ፊት ስንት መናፍስት አሉ?", a: ["አንድ", "ሰባት", "አሥራ ሁለት", "ሃያ አራት"], c: 1 },
+            { q: "በሰባቱ ማኅተሞች የታተመውን መጽሐፍ ለመክፈት የበቃው ማን ነው?", a: ["መልአኩ ገብርኤል", "ዮሐንስ", "የይሁዳ አንበሳ (በጉ)", "ሙሴ"], c: 2 },
+            { q: "አንደኛው ማኅተም ሲፈታ የወጣው ነጭ ፈረስ የተቀመጠበት ምን ይዞ ነበር?", a: ["ሰይፍ", "میዛን", "ቀስት", "አክሊል"], c: 2 },
+            { q: "አራተኛው ማኅተም ሲፈታ የወጣው ፈረስ ቀለም ምን ነበር?", a: ["ቀይ", "ሐመር (አመድማ)", "ጥቁር", "ነጭ"], c: 1 },
+            { q: "የእግዚአብሔር ማኅተም በግንባራቸው የታተመባቸው ሰዎች ቁጥር ስንት ነው?", a: ["12,000", "70,000", "144,000", "አንድ ሚሊዮን"], c: 2 },
+            { q: "በራዕይ 8 ላይ ስንት መለከቶች ተሰጡ?", a: ["ሦስት", "ሰባት", "አሥራ ሁለት", "አራት"], c: 1 },
+            { q: "ዮሐንስ በላው የተባለውና በአፉ እንደ ማር የጣፈጠው መጽሐፍ በሆዱ ውስጥ ምን ሆነ?", a: ["ጣፋጭ", "ብርሃን", "መራራ", "እሳት"], c: 2 },
+            { q: "በራዕይ 12 ላይ የተገለጠችው ሴት በራስዋ ላይ የስንት ከዋክብት አክሊል ነበረ?", a: ["7", "12", "24", "10"], c: 1 },
+            { q: "ከባሕር የወጣው አውሬ ስንት ራሶች ነበሩት?", a: ["አንድ", "አሥር", "ሰባት", "አራት"], c: 2 },
+            { q: "በዮሐንስ ራዕይ ውስጥ የተጠቀሱት አራቱ እንስሳት ምን ዓይነት መልክ ነበራቸው?", a: ["ነብር፣ ጥጃ፣ ንስር ና ሰው", "አንበሳ፣ ንስር፣ ሰው ና ጥጃ", "ንስር፣ ጥጃ፣ ሰው ና በግ", "አንበሳ፣ የታረደው በግ፣ ሰው ና ንስር"], c: 1 }
+        ];
+
+        function validateAndGenerate(event) {
+            event.preventDefault();
+            
+            registeredName = document.getElementById("reg_full_name").value.trim();
+            let groupName = document.getElementById("reg_group_name").value.trim();
+            let errorMsg = document.getElementById("group-error-msg");
+            let resultBox = document.getElementById("resultBox");
+            
+            if (groupName !== "ካቦድ") {
+                errorMsg.classList.remove('hidden');
+                setTimeout(() => { errorMsg.classList.add('hidden'); }, 3000);
+                return false;
+            }
+            
+            errorMsg.classList.add('hidden');
+            document.getElementById("registration-form").classList.add('hidden');
+            
+            generatedSystemCode = "";
+            for (let i = 0; i < 10; i++) {
+                generatedSystemCode += Math.floor(Math.random() * 10);
+            }
+            
+            document.getElementById("examCode").innerText = generatedSystemCode;
+            resultBox.classList.remove('hidden');
+            
+            startRegistrationTimer();
+        }
+
+        function startRegistrationTimer() {
+            let timeLeftReg = 30;
+            document.getElementById("countdown-timer").innerText = `ኮዱን ለመቅዳት የቀረው ጊዜ፡ ${timeLeftReg} ሰከንድ`;
+            document.getElementById("code-area").classList.remove('hidden');
+            document.getElementById("retryBtn").classList.add('hidden');
+
+            clearInterval(registrationTimer);
+            registrationTimer = setInterval(() => {
+                timeLeftReg--;
+                document.getElementById("countdown-timer").innerText = `ኮዱን ለመቅዳት የቀረው ጊዜ፡ ${timeLeftReg} ሰከንድ`;
+                
+                if (timeLeftReg <= 0) {
+                    clearInterval(registrationTimer);
+                    document.getElementById("code-area").classList.add('hidden');
+                    document.getElementById("countdown-timer").innerText = "ጊዜው አልቋል!";
+                    document.getElementById("retryBtn").classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function copyCodeAndProceed() {
+            clearInterval(registrationTimer);
+            
+            const proceedToVerification = () => {
+                document.getElementById("registration-section").classList.add('hidden');
+                document.getElementById("verification-section").classList.remove('hidden');
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(generatedSystemCode).then(() => {
+                    let copyBtn = document.getElementById("copyBtn");
+                    copyBtn.innerHTML = "<span>ቀድተዋል ✔</span>";
+                    copyBtn.className = "bg-emerald-600 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1";
+                    
+                    setTimeout(proceedToVerification, 1000);
+                }).catch((err) => {
+                    console.log("Clipboard error handled", err);
+                    proceedToVerification();
+                });
+            } else {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = generatedSystemCode;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textArea);
+                } catch (e) {
+                    console.log("Fallback copy failed", e);
+                }
+                proceedToVerification();
+            }
+        }
+
+        function resetRegistration() {
+            document.getElementById("registration-form").reset();
+            document.getElementById("registration-form").classList.remove('hidden');
+            document.getElementById("resultBox").classList.add('hidden');
+            
+            let copyBtn = document.getElementById("copyBtn");
+            copyBtn.innerHTML = "<span>ይቅዱ</span>";
+            copyBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1";
+        }
+
+        function verifyCodeAndStart(event) {
+            event.preventDefault();
+            
+            let enteredCode = document.getElementById("verify_code").value.trim();
+            let verifyError = document.getElementById("verify-error-msg");
+            
+            if (enteredCode === generatedSystemCode) {
+                verifyError.classList.add('hidden');
+                
+                document.getElementById('res-name').innerText = registeredName;
+                document.getElementById('res-group').innerText = document.getElementById('reg_group_name').value;
+                document.getElementById('res-role').innerText = document.getElementById('reg_role').value;
+                
+                document.getElementById("verification-section").classList.add('hidden');
+                document.getElementById("quiz-section").classList.remove('hidden');
+                showQuestion();
+            } else {
+                verifyError.classList.remove('hidden');
+                setTimeout(() => { verifyError.classList.add('hidden'); }, 4000);
+            }
+        }
+
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                setTimeout(() => { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+            });
+        });
+
+        function showQuestion() {
+            isAnswered = false;
+            timeLeft = 20;
+            document.getElementById('timer').innerText = timeLeft + "s";
+            document.getElementById('answer-alert').classList.add('hidden');
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft + "s";
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    autoMoveToNext();
+                }
+            }, 1000);
+
+            let currentQ = questions[currentQuestionIndex];
+            document.getElementById('current-question-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-text').innerText = currentQ.q;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            currentQ.a.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.className = "w-full text-left px-5 py-3.5 border-2 border-slate-200 rounded-xl font-medium hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 outline-none";
+                button.onclick = () => selectAnswer(button, index, currentQ.c);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedButton, selectedIndex, correctIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+            clearInterval(timerInterval);
+
+            const optionsContainer = document.getElementById('options-container');
+            const buttons = optionsContainer.getElementsByTagName('button');
+            const alertBox = document.getElementById('answer-alert');
+
+            if (selectedIndex === correctIndex) {
+                score++;
+                selectedButton.className = "w-full text-left px-5 py-3.5 bg-emerald-50 border-2 border-emerald-500 text-emerald-800 font-bold rounded-xl transition-all";
+                alertBox.innerText = "ትክክል ነዎት! 🎉";
+                alertBox.className = "text-center font-bold p-3 rounded-lg bg-emerald-100 text-emerald-800 mt-4 block";
+            } else {
+                selectedButton.className = "w-full text-left px-5 py-3.5 bg-rose-50 border-2 border-rose-500 text-rose-800 font-bold rounded-xl transition-all";
+                buttons[correctIndex].className = "w-full text-left px-5 py-3.5 bg-emerald-50 border-2 border-emerald-500 text-emerald-800 font-bold rounded-xl transition-all";
+                alertBox.innerText = "ስህተት ነዎት! ❌";
+                alertBox.className = "text-center font-bold p-3 rounded-lg bg-rose-100 text-rose-800 mt-4 block";
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) { showQuestion(); } else { endQuiz(); }
+            }, 1000); 
+        }
+
+        function autoMoveToNext() {
+            isAnswered = true;
+            const alertBox = document.getElementById('answer-alert');
+            alertBox.innerText = "ጊዜ አልቋል! ⏰";
+            alertBox.className = "text-center font-bold p-3 rounded-lg bg-amber-100 text-amber-800 mt-4 block";
+
+            const correctIndex = questions[currentQuestionIndex].c;
+            const buttons = document.getElementById('options-container').getElementsByTagName('button');
+            if(buttons[correctIndex]) {
+                buttons[correctIndex].className = "w-full text-left px-5 py-3.5 bg-emerald-50 border-2 border-emerald-500 text-emerald-800 font-bold rounded-xl transition-all";
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) { showQuestion(); } else { endQuiz(); }
+            }, 1000); 
+        }
+
+        // የፈተና ማጠቃለያ - የ Supabase መላኪያ የተጨመረበት
+        function endQuiz() {
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('result-section').classList.remove('hidden');
+            document.getElementById('score-display').innerText = score;
+
+            let emailStudentNameFormat = `${registeredName} (${generatedSystemCode})`;
+            let groupName = document.getElementById('reg_group_name').value;
+            let role = document.getElementById('reg_role').value;
+            let phone = document.getElementById('reg_phone').value;
+
+            // 1. መረጃውን ወደ EmailJS መላክ
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                student_name: emailStudentNameFormat,
+                score: `${score} / 60 (ህብረት: ${groupName} | ድርሻ: ${role})`,
+                feedback: "አስተያየት አልተሰጠም (የመጀመሪያ ውጤት መላኪያ)"
+            });
+
+            // 2. መረጃውን ወደ Google Sheet (Google Script) መላክ
+            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxA3ZVx9dbjT4qLkdpjzMoo6vU01No66ovn_5tVWUjX2KD0gLOruhe29A0C1qOVN5AJ/exec";
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    student_name: registeredName,
+                    exam_code: generatedSystemCode,
+                    score: `${score}/60`,
+                    group_name: groupName,
+                    role: role
+                })
+            }).then(() => {
+                console.log("ውጤቱ ወደ Google Sheet ተልኳል!");
+            }).catch(err => console.error("Error sending to sheet:", err));
+
+            // 3. አዲሱ ማሻሻያ፦ ውጤቱን በቀጥታ ወደ Supabase 'scores' ሰንጠረዥ መላክ
+            _supabase.from('scores').insert([{
+                student_name: registeredName,
+                exam_code: generatedSystemCode,
+                score: parseInt(score),
+                total_questions: 60,
+                group_name: groupName,
+                role: role,
+                phone: phone
+            }]).then(({ data, error }) => {
+                if (error) {
+                    console.error("Supabase Insertion Error:", error);
+                } else {
+                    console.log("ውጤቱ ወደ Supabase በተሳካ ሁኔታ ገብቷል! 🎉");
+                }
+            }).catch(err => console.error("Supabase Promise Error:", err));
+        }
+
+        function showFeedbackInput() {
+            document.getElementById('feedback-trigger-zone').classList.add('hidden');
+            document.getElementById('feedback-zone').classList.remove('hidden');
+        }
+
+        function submitFeedback() {
+            const fbText = document.getElementById('feedback-text').value;
+            if(!fbText.trim()) { alert("እባክዎ መጀመሪያ አስተያየትዎን ይጻፉ!"); return; }
+
+            let emailStudentNameFormat = `${registeredName} (${generatedSystemCode})`;
+
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                student_name: emailStudentNameFormat,
+                score: `${score} / 60 (ህብረት: ${document.getElementById('reg_group_name').value} | ድርሻ: ${document.getElementById('reg_role').value})`,
+                feedback: fbText
+            }).then(() => {
+                alert("አስተያየትዎ በተሳካ ሁኔታ ተልኳል! እናመሰግናለን።");
+                document.getElementById('feedback-zone').innerHTML = "<p class='text-emerald-600 font-bold text-sm'>አስተያየትዎ ደርሶናል!</p>";
+            });
+        }
+    </script>
+</body>
+</html>

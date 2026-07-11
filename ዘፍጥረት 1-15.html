@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>የዘፍጥረት 1-15 ንባብ ፈተና</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("0uwHVjyuXtDRMTr22"); // የአንተ Public Key
+        })();
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        body { padding-bottom: 120px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-slate-900 rounded-2xl shadow-2xl border-2 border-indigo-500/40 p-6 md:p-8 transition-all duration-300 shadow-indigo-500/10">
+        
+        <div id="registration-section" class="space-y-6">
+            <div class="text-center">
+                <h1 class="text-3xl font-extrabold text-indigo-400 mb-2">የዘፍጥረት 1-15 ንባብ ፈተና</h1>
+                <p class="text-slate-400 text-sm">እባክዎ መጀመሪያ ምዝገባዎን ያጠናቅቁ</p>
+            </div>
+            
+            <form id="registration-form" class="space-y-4" onsubmit="validateAndGenerate(event)">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">1. ሙሉ ስም</label>
+                    <input type="text" id="reg_full_name" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ሙሉ ስምዎን ያስገቡ...">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">2. የህብረት ስም</label>
+                    <input type="text" id="reg_group_name" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="የህብረቱን ስም ያስገቡ...">
+                    <div id="group-error-msg" class="hidden text-rose-400 font-bold text-xs mt-1 bg-rose-950/50 p-2 rounded border border-rose-800/50">የተሳሳተ መረጃ! የህብረቱ ስም 'ካቦድ' መሆን አለበት።</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">3. በህብረቱ ውስጥ ያለው ድርሻ</label>
+                    <input type="text" id="reg_role" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ምሳሌ፡ አስተባባሪ፣ አባል...">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">4. ስልክ ቁጥር</label>
+                    <input type="tel" id="reg_phone" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="09........">
+                    <div id="phone-error-msg" class="hidden text-rose-400 font-bold text-xs mt-1 bg-rose-950/50 p-2 rounded border border-rose-800/50">የተሳሳተ ስልክ ቁጥር! እባክዎ በ09 የሚጀምር 10 አሃዝ ቁጥር ያስገቡ።</div>
+                </div>
+                
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-emerald-600/20 transition duration-200 mt-2">
+                    ፎርሙን አስገባ
+                </button>
+            </form>
+
+            <div id="resultBox" class="hidden space-y-4 p-5 bg-indigo-950/40 border-2 border-indigo-500/30 rounded-xl text-center">
+                <div id="countdown-timer" class="text-xs text-amber-400 font-bold mb-1">ኮዱን ለመቅዳት የቀረው ጊዜ፡ 30 ሰከንድ</div>
+                
+                <div id="code-area" class="flex items-center justify-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700">
+                    <span id="examCode" class="text-2xl font-black text-indigo-300 tracking-widest"></span>
+                    <button id="copyBtn" onclick="copyCodeAndProceed()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1 transition">
+                        <span>ይቅዱ</span>
+                    </button>
+                </div>
+
+                <button id="retryBtn" onclick="resetRegistration()" class="hidden w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-lg shadow transition duration-200">
+                    ጊዜ አልቋል! እንደገና ይመዝገቡ
+                </button>
+            </div>
+        </div>
+
+        <div id="verification-section" class="hidden space-y-6">
+            <div class="text-center">
+                <h1 class="text-2xl font-extrabold text-indigo-400 mb-2">የኮድ ማረጋገጫ ገጽ</h1>
+                <p class="text-slate-400 text-sm">እባክዎ የቀዱትን የመፈተኛ ኮድ እዚህ ያስገቡ</p>
+            </div>
+            
+            <form id="verification-form" class="space-y-4" onsubmit="verifyCodeAndStart(event)">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">የመፈተኛ ኮድ</label>
+                    <input type="text" id="verify_code" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition text-center text-xl tracking-widest font-bold" placeholder="የቀዱትን ኮድ እዚህ ላይ ይለጥፉ...">
+                    <div id="verify-error-msg" class="hidden text-rose-400 font-bold text-xs mt-1 bg-rose-950/50 p-2 rounded border border-rose-800/50 text-center">የተሳሳተ የመፈተኛ ኮድ! እባክዎ በትክክል ያረጋግጡ።</div>
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-indigo-600/20 transition duration-200 mt-2">
+                    አረጋግጥና ፈተናውን ጀምር
+                </button>
+            </form>
+        </div>
+
+        <div id="quiz-section" class="hidden space-y-6">
+            <div class="flex justify-between items-center border-b pb-4 border-slate-800">
+                <div class="text-sm font-medium text-slate-400">
+                    ጥያቄ: <span id="current-question-num" class="text-indigo-400 font-bold text-lg">1</span>/30
+                </div>
+                <div class="flex items-center space-x-2 bg-amber-950/40 px-3 py-1.5 rounded-full border border-amber-800/40">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-ping"></span>
+                    <span class="text-sm font-bold text-amber-400" id="timer">35s</span>
+                </div>
+            </div>
+            <h2 id="question-text" class="text-xl font-bold text-slate-100 leading-relaxed min-h-[60px]"></h2>
+            <div id="options-container" class="grid grid-cols-1 gap-3.5 mt-4"></div>
+            <div id="answer-alert" class="hidden text-center font-bold p-3 rounded-lg transition-all"></div>
+        </div>
+
+        <div id="result-section" class="hidden space-y-6 text-center">
+            <div class="w-20 h-20 bg-indigo-950/50 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold text-slate-100">የፈተናው ማጠቃለያ</h2>
+            
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-left max-w-md mx-auto space-y-2 text-sm text-slate-200">
+                <p><span class="font-semibold text-slate-400">የተፈታኝ ስም:</span> <span id="res-name" class="font-bold text-slate-100"></span></p>
+                <p><span class="font-semibold text-slate-400">የህብረት ስም:</span> <span id="res-group" class="font-bold text-slate-100"></span></p>
+                <p><span class="font-semibold text-slate-400">በህብረቱ ያለዎት ድርሻ:</span> <span id="res-role" class="font-bold text-slate-100"></span></p>
+            </div>
+
+            <div class="text-2xl font-bold mt-4 text-slate-200">
+                ውጤት: <span id="score-display" class="text-emerald-400 text-3xl">0</span> / 30
+            </div>
+            <p class="text-xs text-slate-500">ውጤትዎ በራስ-ሰር ወደ nardosdemissie392@gmail.com ተልኳል።</p>
+            <hr class="border-slate-800 my-4">
+            <div id="feedback-trigger-zone">
+                <button onclick="showFeedbackInput()" class="text-indigo-400 hover:text-indigo-300 font-semibold underline text-sm transition">አስተያየት ለመስጠት እዚህ ይጫኑ</button>
+            </div>
+            <div id="feedback-zone" class="hidden max-w-md mx-auto space-y-3 pt-2">
+                <textarea id="feedback-text" rows="3" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="እባክዎ እዚህ ላይ አስተያየትዎን ይጻፉ..."></textarea>
+                <button onclick="submitFeedback()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow transition">አስተያየት ላክ</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://jdusgofvctxmfgrnrgjq.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkdXNnb2Z2Y3R4bWZncm5yZ2pxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MT78MjgwMjQ3MiwiZXhwIjoyMDk4Mzc4NDcyfQ.J-aBPwvBOD7PPb9YTXd28yuUnuXhp3xARslADs31MNY";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const SERVICE_ID = "service_umghqqj";
+        const TEMPLATE_ID = "template_nadmc5u";
+
+        let score = 0;
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let registrationTimer;
+        let timeLeft = 35;
+        let isAnswered = false;
+
+        let generatedSystemCode = ""; 
+        let registeredName = ""; 
+
+        const questions = [
+            { q: "በመጀመሪያ እግዚአብሔር ሰማይንና ምድርን ሲፈጥር ምድር ምን ዓይነት ነበረች?", a: ["ውብና ሙሉ", "ባዶ ነበረች፥ አንዳችም አልነበረባትም", "የበራችና የተዘጋጀች", "በእሳት የተከበበች"], c: 1 },
+            { q: "እግዚአብሔር በመጀመሪያው ቀን ብርሃን ከሆነ በኋላ በስንተኛው ቀን ነው ታላላቅ ብርሃናትን (ፀሐይና ጨረቃን) የፈጠረው?", a: ["በሁለተኛው ቀን", "በሦስተኛው ቀን", "በአራተኛው ቀን", "በአምስተኛው ቀን"], c: 2 },
+            { q: "ሰው በምድር ላይ ከመፈጠሩ በፊት ምድርን የሚያጠጣው ምን ነበረ?", a: ["ከባድ ዝናብ", "ጉም ከምድር ይወጣ ነበር", "የባሕር ሞገድ", "ታላቅ ወንዝ"], c: 1 },
+            { q: "እግዚአብሔር ሰውን ከምድር አፈር ካበጀው በኋላ የሕይወት እስትንፋስ በየትኛው የሰውነት ክፍሉ እፍ አለበት?", a: ["በአፉ", "በአፍንጫው", "በልቡ", "በእጆቹ"], c: 1 },
+            { q: "ከዔድን ገነት ከሚወጡት አራት ወንዞች መካከል የኢትዮጵያን ምድር ሙሉ በሙሉ የሚከበው ወንዝ ማን ይባላል?", a: ["ፊሶን", "ግዮን", "ጤግሮስ", "ኤፍራጥስ"], c: 1 },
+            { q: "እግዚአብሔር አዳምን በገነት እንዲኖር ካደረገው በኋላ የትኛውን ዛፍ እንዳይበላ በጥብቅ አዘዘው?", a: ["የሕይወትን ዛፍ", "መልካምና ክፉን የሚያስታውቀውን ዛፍ", "የበለስን ዛፍ", "የወይራውን ዛፍ"], c: 1 },
+            { q: "እግዚአብሔር ለአዳም ተስማሚ ረዳት ለመፍጠር ከአዳም የወሰደው የሰውነት ክፍል ምንድን ነው?", a: ["የቀኝ እጁን አጥንት", "የልቡን ክፍል", "ከጎኑ አንዲት አጥንት", "ከጭንቅላቱ ፀጉር"], c: 2 },
+            { q: "እባብ ሴቲቱን 'ከገነት ዛፍ ሁሉ እንዳትበሉ አዟልን?' ብሎ በጠየቃት ጊዜ የመለሰችለት የተሳሳተ ቃል ምን ነበር?", a: ["እንዳንበላው እንዳንነካውም", "ዛፉ ክፉ ነው", "አምላክ ዋሽቶናል", "ምንም አልመለሰችለትም"], c: 0 },
+            { q: "አዳምና ሔዋን ከዛፉ በሉ በኋላ ዓይናቸው ተከፍቶ ዕራቁታቸውን መሆናቸውን ባወቁ ጊዜ የምን ቅጠል ሰፍተው ስቅታ አደረጉ?", a: ["የወይራ ቅጠል", "የበለስ ቅጠል", "የወይን ቅጠል", "የዘንባባ ቅጠል"], c: 1 },
+            { q: "እግዚአብሔር አዳምን 'የት ነህ?' ብሎ በጠራው ጊዜ አዳም የሰጠው ምክንያት ምን ነበር?", a: ["ስለደከመኝ ተኝቼ ነበር", "ድምፅህን በገነት ሰማሁ ፈራሁም፥ ዕራቁቴንም ስለ ሆንሁ ተሸሸግሁ", "ሔዋን ስለከለከለችኝ ነው", "በመጸለይ ላይ ነበርኩ"], c: 1 },
+            { q: "በእባቡ ላይ ከተፈረደው ፍርድ መካከል 'እርሱ ራስህን ይቀጠቅጣል' የተባለው የማን ዘር ነው?", a: ["የአዳም ዘር", "የሴቲቱ ዘር", "የመላእክት ዘር", "የቃየን ዘር"], c: 1 },
+            { q: "አዳም ለሚስቱ 'ሔዋን' ብሎ ስም ያወጣላት በምን ምክንያት ነው?", a: ["ከጎኑ ስለተገኘች", "የሕያዋን ሁሉ እናት ናትና", "እጅግ ውብ ስለነበረች", "የመጀመሪያዋ ሴት ስለሆነች"], c: 1 },
+            { q: "የቃየን እና የአቤል መሥዋዕት ለምን ቀረበ? እግዚአብሔር ወደ ማን መሥዋዕት ነው የተመለከተው?", a: ["ወደ ቃየንና ወደ መሥዋዕቱ", "ወደ አቤልና ወደ መሥዋዕቱ", "ወደ ሁለቱም አልተመለከተም", "የሁለቱንም እኩል ተቀበለ"], c: 1 },
+            { q: "ቃየን አቤልን ከገደለው በኋላ እግዚአብሔር 'ወንድምህ አቤል ወዴት ነው?' ሲለው የቃየን ምላሽ ምን ነበር?", a: ["አላውቅም፤ የእኔ ወንድም ጠባቂው እኔ ነኝን?", "መሬት ውስጥ ቀብሬዋለሁ", "ወደ ጫካ ሄዷል", "ይቅርታ አድርግልኝ"], c: 0 },
+            { q: "ቃየን ከእግዚአብሔር ፊት ወጥቶ ከዔድን በስተምሥራቅ በየትኛው ምድር ተቀመጠ?", a: ["በከነዓን ምድር", "በኖድ ምድር", "በግብፅ ምድር", "በሱር ምድር"], c: 1 },
+            { q: "አቤል ከተገደለ በኋላ ቃየን በአቤል ምትክ ያገኙትና 'እግዚአብሔር ሌላ ዘር ተካ meng' ያሉበት ልጅ ማን ይባላል?", a: ["ሄኖክ", "Ref (ሴት)", "ማቱሳላ", "ላሜሕ"], c: 1 },
+            { q: "የሴት ልጅ የሆነው ሄኖስ በተወለደ ጊዜ በምድር ላይ ምን መደረግ ተጀመረ?", a: ["መሥዋዕት ማቅረብ", "በእግዚአብሔር ስም መጥራት", "ከተማ መሥራት", "ጦርነት መጀመር"], c: 1 },
+            { q: "ከሞት በቀጥታ ተሰውሮ 'ከእግዚአብሔር ጋር አካሄዱን አደረገ፥ እግዚአብሔርም ወስዶታልና አልተገኘም' የተባለው አባት ማን ነው?", a: ["ላሜሕ", "ሄኖክ", "ቃየን", "ማቱሳላ"], c: 1 },
+            { q: "በመጽሐፍ ቅዱስ ታሪክ ውስጥ ረጅም ዕድሜ የኖረውና 969 ዓመት የኖረው ሰው ማን ይባላል?", a: ["ያሬድ", "ማቱሳላ", "ኖኅ", "አዳም"], c: 1 },
+            { q: "እግዚአብሔር በኖኅ ዘመን የሰውን ክፋት አይቶ ሰውን በመፍጠሩ የተሰማው ስሜት ምንድን ነው?", a: ["በልቡ አዘነ፥ ተጸጸተም", "እጅግ ተቆጣ", "ምድርን ወዲያው አጠፋት", "ዝም አለ"], c: 0 },
+            { q: "እግዚአብሔር ኖኅን የጥፋት ውኃ ሳይመጣ በፊት መርከቧን ከምን እንጨት እንዲሠራ አዘዘው?", a: ["ከዝግባ እንጨት", "ከጎፈር እንጨት", "ከወይራ እንጨት", "ከእርክ እንጨት"], c: 1 },
+            { q: "በኖኅ መርከብ ውስጥ ከጥፋት ውኃ የዳኑት የሰው ነፍሳት ብዛት ስንት ነበር?", a: ["3 ነፍስ", "7 ነፍስ", "8 ነፍስ", "12 ነፍስ"], c: 2 },
+            { q: "የጥፋት ውኃው በምድር ላይ ለስንት ቀናት እየጎረፈ ቆየ?", a: ["ለ7 ቀናት", "ለ40 ቀንና 40 ሌሊት", "ለ150 ቀናት", "ለአንድ ዓመት ሙሉ"], c: 1 },
+            { q: "ውኃው ከቀነሰ በኋላ የኖኅ መርከብ ያረፈችው በየትኛው ተራራ ላይ ነበር?", a: ["በሲና ተራራ", "በአራራት ተራራ", "በኮሬብ ተራራ", "በደብረ ዘይት ተራራ"], c: 1 },
+            { q: "ኖኅ የውኃውን መድረቅ ለማወቅ መጀመሪያ የላካት ወፍ ማን ነበረች? ሁለተኛስ?", a: ["ርግብ፥ ከዚያም ቁራ", "ቁራ፥ ከዚያም ርግብ", "ንስር፥ ከዚያም ርግብ", "ቁራ ብቻ"], c: 1 },
+            { q: "እግዚአብሔር ምድርን ድጋሚ በውኃ ላላማጥፋት ከኖኅ ጋር ለገባው ኪዳን ምልክት ያደረገው ምንድነው?", a: ["ታላቅ መሥዋዕት", "ቀስቱን በደመና ማድረጉ (ቀስተ ደመና)", "ታላቅ ቃል ኪዳን", "የመሬት መንቀጥቀጥ"], c: 1 },
+            { q: "ሰዎች ሰማይ የሚደርስ ግንብ ለመሥራት አቅደው የእግዚአብሔር ፍርድ የመጣባቸውና ቋንቋቸው የተደባለቀበት ስፍራ ምን ይባላል?", a: ["ሰዶም", "ባቢሎን (ባቤል)", "ከላውዴያን ዑር", "ካራን"], c: 1 },
+            { q: "እግዚአብሔር አብራምን 'ከአገርህ ከዘመዶችህም ወጣ' ብሎ በጠራው ጊዜ አብራም ዕድሜው ስንት ነበር?", a: ["50 ዓመት", "75 ዓመት", "99 ዓመት", "100 ዓመት"], c: 1 },
+            { q: "በአብራም እና በሎጥ እረኞች መካከል ጠብ በሆነ ጊዜ ሎጥ መርጦ የሄደውና ውኃ የሞላበት ለም ስፍራ የቱ ነበር?", a: ["የከላውዴያን ምድር", "የዮርዳኖስ ዙሪያ አገር (የሰዶም አቅራቢያ)", "የኬብሮን ምድር", "የኔጌብ ምድር"], c: 1 },
+            { q: "የልዑል እግዚአብሔር ካህን የሆነውና ለአብራም እንጀራና ወይን ይዞ የወጣው፥ አብራምም ከአሥራት አንድ የሰጠው ንጉሥ ማን ነው?", a: ["የሰዶም ንጉሥ", "መልከ ጼዴቅ", "አቤሜሌክ", "ፈርዖን"], c: 1 }
+        ];
+
+        function validateAndGenerate(event) {
+            event.preventDefault();
+            
+            registeredName = document.getElementById("reg_full_name").value.trim();
+            let groupName = document.getElementById("reg_group_name").value.trim();
+            let phoneNum = document.getElementById("reg_phone").value.trim();
+            
+            let groupError = document.getElementById("group-error-msg");
+            let phoneError = document.getElementById("phone-error-msg");
+            let resultBox = document.getElementById("resultBox");
+            
+            // የህብረት ስም ማረጋገጫ
+            if (groupName !== "ካቦድ") {
+                groupError.classList.remove('hidden');
+                setTimeout(() => { groupError.classList.add('hidden'); }, 3000);
+                return false;
+            }
+            
+            // የስልክ ቁጥር ማረጋገጫ (በ09 መጀመር አለበት እና ልክ 10 አሃዝ መሆን አለበት)
+            let phoneRegex = /^09\d{8}$/;
+            if (!phoneRegex.test(phoneNum)) {
+                phoneError.classList.remove('hidden');
+                setTimeout(() => { phoneError.classList.add('hidden'); }, 4000);
+                return false;
+            }
+            
+            groupError.classList.add('hidden');
+            phoneError.classList.add('hidden');
+            document.getElementById("registration-form").classList.add('hidden');
+            
+            generatedSystemCode = "";
+            for (let i = 0; i < 10; i++) {
+                generatedSystemCode += Math.floor(Math.random() * 10);
+            }
+            
+            document.getElementById("examCode").innerText = generatedSystemCode;
+            resultBox.classList.remove('hidden');
+            
+            startRegistrationTimer();
+        }
+
+        function startRegistrationTimer() {
+            let timeLeftReg = 30;
+            document.getElementById("countdown-timer").innerText = `ኮዱን ለመቅዳት የቀረው ጊዜ፡ ${timeLeftReg} ሰከንድ`;
+            document.getElementById("code-area").classList.remove('hidden');
+            document.getElementById("retryBtn").classList.add('hidden');
+
+            clearInterval(registrationTimer);
+            registrationTimer = setInterval(() => {
+                timeLeftReg--;
+                document.getElementById("countdown-timer").innerText = `코ዱን ለመቅዳት የቀረው ጊዜ፡ ${timeLeftReg} ሰከንድ`;
+                
+                if (timeLeftReg <= 0) {
+                    clearInterval(registrationTimer);
+                    document.getElementById("code-area").classList.add('hidden');
+                    document.getElementById("countdown-timer").innerText = "ጊዜው አልቋል!";
+                    document.getElementById("retryBtn").classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function copyCodeAndProceed() {
+            clearInterval(registrationTimer);
+            
+            const proceedToVerification = () => {
+                document.getElementById("registration-section").classList.add('hidden');
+                document.getElementById("verification-section").classList.remove('hidden');
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(generatedSystemCode).then(() => {
+                    let copyBtn = document.getElementById("copyBtn");
+                    copyBtn.innerHTML = "<span>ቀድተዋል ✔</span>";
+                    copyBtn.className = "bg-emerald-600 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1";
+                    
+                    setTimeout(proceedToVerification, 1000);
+                }).catch((err) => {
+                    console.log("Clipboard error handled", err);
+                    proceedToVerification();
+                });
+            } else {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = generatedSystemCode;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textArea);
+                } catch (e) {
+                    console.log("Fallback copy failed", e);
+                }
+                proceedToVerification();
+            }
+        }
+
+        function resetRegistration() {
+            document.getElementById("registration-form").reset();
+            document.getElementById("registration-form").classList.remove('hidden');
+            document.getElementById("resultBox").classList.add('hidden');
+            
+            let copyBtn = document.getElementById("copyBtn");
+            copyBtn.innerHTML = "<span>ይቅዱ</span>";
+            copyBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1";
+        }
+
+        function verifyCodeAndStart(event) {
+            event.preventDefault();
+            
+            let enteredCode = document.getElementById("verify_code").value.trim();
+            let verifyError = document.getElementById("verify-error-msg");
+            
+            if (enteredCode === generatedSystemCode) {
+                verifyError.classList.add('hidden');
+                
+                document.getElementById('res-name').innerText = registeredName;
+                document.getElementById('res-group').innerText = document.getElementById('reg_group_name').value;
+                document.getElementById('res-role').innerText = document.getElementById('reg_role').value;
+                
+                document.getElementById("verification-section").classList.add('hidden');
+                document.getElementById("quiz-section").classList.remove('hidden');
+                showQuestion();
+            } else {
+                verifyError.classList.remove('hidden');
+                setTimeout(() => { verifyError.classList.add('hidden'); }, 4000);
+            }
+        }
+
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                setTimeout(() => { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+            });
+        });
+
+        function showQuestion() {
+            isAnswered = false;
+            timeLeft = 35;
+            document.getElementById('timer').innerText = timeLeft + "s";
+            document.getElementById('answer-alert').classList.add('hidden');
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft + "s";
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    autoMoveToNext(); // ጊዜ ሲያልቅ በራሱ እንዲሸጋገር ያደርጋል
+                }
+            }, 1000);
+
+            let currentQ = questions[currentQuestionIndex];
+            document.getElementById('current-question-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-text').innerText = currentQ.q;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            currentQ.a.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.className = "w-full text-left px-5 py-3.5 bg-slate-800 border-2 border-slate-700 rounded-xl font-medium text-slate-200 hover:bg-slate-700 hover:border-slate-500 transition-all duration-150 outline-none";
+                button.onclick = () => selectAnswer(button, index, currentQ.c);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedButton, selectedIndex, correctIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+            clearInterval(timerInterval);
+
+            const optionsContainer = document.getElementById('options-container');
+            const buttons = optionsContainer.getElementsByTagName('button');
+            const alertBox = document.getElementById('answer-alert');
+
+            if (selectedIndex === correctIndex) {
+                score++;
+                selectedButton.className = "w-full text-left px-5 py-3.5 bg-emerald-950/80 border-2 border-emerald-500 text-emerald-300 font-bold rounded-xl transition-all";
+                alertBox.innerText = "ትክክል ነዎት! 🎉";
+                alertBox.className = "text-center font-bold p-3 rounded-lg bg-emerald-900/50 text-emerald-300 mt-4 block border border-emerald-500/30";
+            } else {
+                selectedButton.className = "w-full text-left px-5 py-3.5 bg-rose-950/80 border-2 border-rose-500 text-rose-300 font-bold rounded-xl transition-all";
+                buttons[correctIndex].className = "w-full text-left px-5 py-3.5 bg-emerald-950/80 border-2 border-emerald-500 text-emerald-300 font-bold rounded-xl transition-all";
+                alertBox.innerText = "ስህተት ነዎት! ❌";
+                alertBox.className = "text-center font-bold p-3 rounded-lg bg-rose-900/50 text-rose-300 mt-4 block border border-rose-500/30";
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) { showQuestion(); } else { endQuiz(); }
+            }, 500); 
+        }
+
+        function autoMoveToNext() {
+            isAnswered = true;
+            const alertBox = document.getElementById('answer-alert');
+            alertBox.innerText = "ጊዜ አልቋል! ⏰";
+            alertBox.className = "text-center font-bold p-3 rounded-lg bg-amber-900/50 text-amber-300 mt-4 block border border-amber-500/30";
+
+            const correctIndex = questions[currentQuestionIndex].c;
+            const buttons = document.getElementById('options-container').getElementsByTagName('button');
+            if(buttons[correctIndex]) {
+                buttons[correctIndex].className = "w-full text-left px-5 py-3.5 bg-emerald-950/80 border-2 border-emerald-500 text-emerald-300 font-bold rounded-xl transition-all";
+            }
+
+            // ጊዜ ሲያልቅ በራሱ 0.5 ሰከንድ ቆይቶ ወደ ቀጣዩ ጥያቄ እንዲያልፍ ተደርጓል
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) { showQuestion(); } else { endQuiz(); }
+            }, 500); 
+        }
+
+        function endQuiz() {
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('result-section').classList.remove('hidden');
+            document.getElementById('score-display').innerText = score;
+
+            let emailStudentNameFormat = `${registeredName} (${generatedSystemCode})`;
+            let groupName = document.getElementById('reg_group_name').value;
+            let role = document.getElementById('reg_role').value;
+            let phone = document.getElementById('reg_phone').value;
+
+            // 1. መረጃውን ወደ EmailJS መላክ
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                student_name: emailStudentNameFormat,
+                score: `${score} / 30 (ህብረት: ${groupName} | ድርሻ: ${role})`,
+                feedback: "አስተያየት አልተሰጠም (የመጀመሪያ ውጤት መላኪያ)"
+            });
+
+            // 2. መረጃውን ወደ Google Sheet
+            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxA3ZVx9dbjT4qLkdpjzMoo6vU01No66ovn_5tVWUjX2KD0gLOruhe29A0C1qOVN5AJ/exec";
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    student_name: registeredName,
+                    exam_code: generatedSystemCode,
+                    score: `${score}/30`,
+                    group_name: groupName,
+                    role: role
+                })
+            }).then(() => {
+                console.log("ውጤቱ ወደ Google Sheet ተልኳል!");
+            }).catch(err => console.error("Error sending to sheet:", err));
+
+            // 3. ውጤቱን ወደ Supabase መላክ
+            _supabase.from('scores').insert([{
+                student_name: registeredName,
+                exam_code: generatedSystemCode,
+                score: parseInt(score),
+                total_questions: 30,
+                group_name: groupName,
+                role: role,
+                phone: phone
+            }]).then(({ data, error }) => {
+                if (error) {
+                    console.error("Supabase Insertion Error:", error);
+                } else {
+                    console.log("ውጤቱ ወደ Supabase በተሳካ ሁኔታ ገብቷል! 🎉");
+                }
+            }).catch(err => console.error("Supabase Promise Error:", err));
+        }
+
+        function showFeedbackInput() {
+            document.getElementById('feedback-trigger-zone').classList.add('hidden');
+            document.getElementById('feedback-zone').classList.remove('hidden');
+        }
+
+        function submitFeedback() {
+            const fbText = document.getElementById('feedback-text').value;
+            if(!fbText.trim()) { alert("እባክዎ መጀመሪያ አስተያየትዎን ይጻፉ!"); return; }
+
+            let emailStudentNameFormat = `${registeredName} (${generatedSystemCode})`;
+
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                student_name: emailStudentNameFormat,
+                score: `${score} / 30 (ህብረት: ${document.getElementById('reg_group_name').value} | ድርሻ: ${document.getElementById('reg_role').value})`,
+                feedback: fbText
+            }).then(() => {
+                alert("አስተያየትዎ በተሳካ ሁኔታ ተልኳል! እናመሰግናለን።");
+                document.getElementById('feedback-zone').innerHTML = "<p class='text-emerald-400 font-bold text-sm'>አስተያየትዎ ደርሶናል!</p>";
+            });
+        }
+    </script>
+</body>
+</html>

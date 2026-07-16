@@ -33,12 +33,12 @@
                     <input type="text" id="reg_full_name" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ሙሉ ስምዎን ያስገቡ...">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-300 mb-1">2. የህብረት ስም</label>
-                    <input type="text" id="reg_group_name" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="የህብረቱን ስም ያስገቡ...">
-                    <div id="group-error-msg" class="hidden text-rose-400 font-bold text-xs mt-1 bg-rose-950/50 p-2 rounded border border-rose-800/50">የተሳሳተ መረጃ! የህብረቱ ስም 'ካቦድ' መሆን አለበት።</div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">2. የፈተናው ክፍል</label>
+                    <input type="text" id="reg_group_name" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ዘፍጥረት 1-15">
+                    <div id="group-error-msg" class="hidden text-rose-400 font-bold text-xs mt-1 bg-rose-950/50 p-2 rounded border border-rose-800/50">የተሳሳተ መረጃ! የፈተናው ክፍል 'ዘፍጥረት 1-15' መሆን አለበት።</div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-300 mb-1">3. በህብረቱ ውስጥ ያለው ድርሻ</label>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">3. በፈተናው ክፍል ውስጥ ያለው ድርሻ</label>
                     <input type="text" id="reg_role" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ምሳሌ፡ አስተባባሪ፣ አባል...">
                 </div>
                 <div>
@@ -112,8 +112,8 @@
             
             <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-left max-w-md mx-auto space-y-2 text-sm text-slate-200">
                 <p><span class="font-semibold text-slate-400">የተፈታኝ ስም:</span> <span id="res-name" class="font-bold text-slate-100"></span></p>
-                <p><span class="font-semibold text-slate-400">የህብረት ስም:</span> <span id="res-group" class="font-bold text-slate-100"></span></p>
-                <p><span class="font-semibold text-slate-400">በህብረቱ ያለዎት ድርሻ:</span> <span id="res-role" class="font-bold text-slate-100"></span></p>
+                <p><span class="font-semibold text-slate-400">የፈተናው ክፍል:</span> <span id="res-group" class="font-bold text-slate-100"></span></p>
+                <p><span class="font-semibold text-slate-400">በፈተናው ክፍል ያለዎት ድርሻ:</span> <span id="res-role" class="font-bold text-slate-100"></span></p>
             </div>
 
             <div class="text-2xl font-bold mt-4 text-slate-200">
@@ -151,25 +151,25 @@
         let registeredName = ""; 
 
         const questions = [
-            { q: "በመጀመሪያ እግዚአብሔር ሰማይንና ምድርን ሲፈጥር ምድር ምን ዓይነት ነበረች?", a: ["ውብና ሙሉ", "ባዶ ነበረች፥ አንዳችም አልነበረባትም", "የበራችና የተዘጋጀች", "በእሳት የተከበበች"], c: 1 },
-            { q: "እግዚአብሔር በመጀመሪያው ቀን ብርሃን ከሆነ በኋላ በስንተኛው ቀን ነው ታላላቅ ብርሃናትን (ፀሐይና ጨረቃን) የፈጠረው?", a: ["በሁለተኛው ቀን", "በሦስተኛው ቀን", "በአራተኛው ቀን", "በአምስተኛው ቀን"], c: 2 },
+            { q: "በሰው የተረገመ የመጀመሪያ ሰው ማን ነው?", a: ["ላሜህ", "ቃየን", "ኩሽ", "ከነዓን"], c: 3 },
+            { q: "እግዚአብሔር በመጀመሪያው ቀን ብርሃን ከፈጠረ በኋላ በስንተኛው ቀን ነው ታላላቅ ብርሃናትን (ፀሐይና ጨረቃን) የፈጠረው?", a: ["በሁለተኛው ቀን", "በሦስተኛው ቀን", "በአራተኛው ቀን", "በአምስተኛው ቀን"], c: 2 },
             { q: "ሰው በምድር ላይ ከመፈጠሩ በፊት ምድርን የሚያጠጣው ምን ነበረ?", a: ["ከባድ ዝናብ", "ጉም ከምድር ይወጣ ነበር", "የባሕር ሞገድ", "ታላቅ ወንዝ"], c: 1 },
-            { q: "እግዚአብሔር ሰውን ከምድር አፈር ካበጀው በኋላ የሕይወት እስትንፋስ በየትኛው የሰውነት ክፍሉ እፍ አለበት?", a: ["በአፉ", "በአፍንጫው", "በልቡ", "በእጆቹ"], c: 1 },
+            { q: "የኖህ መርከብ ከተራሮች በስንት በስንት ሜትር ነበር ከፍ ያለው?", a: ["7", "170", "40", "140"], c: 0 },
             { q: "ከዔድን ገነት ከሚወጡት አራት ወንዞች መካከል የኢትዮጵያን ምድር ሙሉ በሙሉ የሚከበው ወንዝ ማን ይባላል?", a: ["ፊሶን", "ግዮን", "ጤግሮስ", "ኤፍራጥስ"], c: 1 },
             { q: "እግዚአብሔር አዳምን በገነት እንዲኖር ካደረገው በኋላ የትኛውን ዛፍ እንዳይበላ በጥብቅ አዘዘው?", a: ["የሕይወትን ዛፍ", "መልካምና ክፉን የሚያስታውቀውን ዛፍ", "የበለስን ዛፍ", "የወይራውን ዛፍ"], c: 1 },
-            { q: "እግዚአብሔር ለአዳም ተስማሚ ረዳት ለመፍጠር ከአዳም የወሰደው የሰውነት ክፍል ምንድን ነው?", a: ["የቀኝ እጁን አጥንት", "የልቡን ክፍል", "ከጎኑ አንዲት አጥንት", "ከጭንቅላቱ ፀጉር"], c: 2 },
-            { q: "እባብ ሴቲቱን 'ከገነት ዛፍ ሁሉ እንዳትበሉ አዟልን?' ብሎ በጠየቃት ጊዜ የመለሰችለት የተሳሳተ ቃል ምን ነበር?", a: ["እንዳንበላው እንዳንነካውም", "ዛፉ ክፉ ነው", "አምላክ ዋሽቶናል", "ምንም አልመለሰችለትም"], c: 0 },
-            { q: "አዳምና ሔዋን ከዛፉ በሉ በኋላ ዓይናቸው ተከፍቶ ዕራቁታቸውን መሆናቸውን ባወቁ ጊዜ የምን ቅጠል ሰፍተው ስቅታ አደረጉ?", a: ["የወይራ ቅጠል", "የበለስ ቅጠል", "የወይን ቅጠል", "የዘንባባ ቅጠል"], c: 1 },
-            { q: "እግዚአብሔር አዳምን 'የት ነህ?' ብሎ በጠራው ጊዜ አዳም የሰጠው ምክንያት ምን ነበር?", a: ["ስለደከመኝ ተኝቼ ነበር", "ድምፅህን በገነት ሰማሁ ፈራሁም፥ ዕራቁቴንም ስለ ሆንሁ ተሸሸግሁ", "ሔዋን ስለከለከለችኝ ነው", "በመጸለይ ላይ ነበርኩ"], c: 1 },
+            { q: "እግዚአብሔር ለአብራም በራእይ ተገልጦ 'ጋሻህ እኔ ነኝ፤ ዋጋህም እጅግ ታላቅ ነው' ያለው የትኛውን ንጉሥ ድል አድርጎ ከተመለሰ በኋላ ነው?", a: ["የሰዶምን ንጉሥ", "ኮሎዶጎሞርንና አብረውት የነበሩትን ነገሥታት", "የግብፅን ፈርዖን", "አቤሜሌክን"], c: 1 },
+            { q: "አብራም ሎጥን ለማስጣል የወሰዳቸው በቤቱ የተወለዱና የሰለጠኑ ጦረኞች ብዛት ስንት ነበር?", a: ["300", "318", "400", "150"], c: 1 },
+            { q: "አዳምና ሔዋን ከዛፉ ከበሉ በኋላ ዓይናቸው ተከፍቶ ዕራቁታቸውን መሆናቸውን ባወቁ ጊዜ የምን ቅጠል ነበር ያገለደሙት?", a: ["የወይራ ቅጠል", "የወይን ቅጠል", "የበለስ ቅጠል", "የዘንባባ ቅጠል"], c: 2 },
+            { q: "እግዚአብሔር ከአብራም ጋር ኪዳን በገባ ጊዜ በተከፈሉት እንስሳት መካከል በምልክትነት ያለፈው ምን ነበረ?", a: ["የሚነድድ ችቦና የሚጤስ እቶን", "ታላቅ መብረቅና ነፋስ", "የእግዚአብሔር ክንድ", "የሰማይ እሳት"], c: 0 },
             { q: "በእባቡ ላይ ከተፈረደው ፍርድ መካከል 'እርሱ ራስህን ይቀጠቅጣል' የተባለው የማን ዘር ነው?", a: ["የአዳም ዘር", "የሴቲቱ ዘር", "የመላእክት ዘር", "የቃየን ዘር"], c: 1 },
-            { q: "አዳም ለሚስቱ 'ሔዋን' ብሎ ስም ያወጣላት በምን ምክንያት ነው?", a: ["ከጎኑ ስለተገኘች", "የሕያዋን ሁሉ እናት ናትና", "እጅግ ውብ ስለነበረች", "የመጀመሪያዋ ሴት ስለሆነች"], c: 1 },
-            { q: "የቃየን እና የአቤል መሥዋዕት ለምን ቀረበ? እግዚአብሔር ወደ ማን መሥዋዕት ነው የተመለከተው?", a: ["ወደ ቃየንና ወደ መሥዋዕቱ", "ወደ አቤልና ወደ መሥዋዕቱ", "ወደ ሁለቱም አልተመለከተም", "የሁለቱንም እኩል ተቀበለ"], c: 1 },
-            { q: "ቃየን አቤልን ከገደለው በኋላ እግዚአብሔር 'ወንድምህ አቤል ወዴት ነው?' ሲለው የቃየን ምላሽ ምን ነበር?", a: ["አላውቅም፤ የእኔ ወንድም ጠባቂው እኔ ነኝን?", "መሬት ውስጥ ቀብሬዋለሁ", "ወደ ጫካ ሄዷል", "ይቅርታ አድርግልኝ"], c: 0 },
+            { q: "አዳም ለሚስቱ 'ሔዋን' ብሎ ስም ያወጣላት በምን ምክንያት ነው?", a: ["ከጎኑ ስለተገኘች", "የሕያዋን ሁሉ እናት ስለሆነች", "እጅግ ውብ ስለነበረች", "የመጀመሪያዋ ሴት ስለሆነች"], c: 1 },
+            { q: "አብራም ሎጥን ለማዳን ጠላቶቹን እያሳደደ እስከ የትኛው ስፍራ ድረስ ነው የገፋቸው?", a: ["እስከ ኬብሮን", "እስከ ደማስቆ በስተግራ እስከሚገኘው እስከ ሖባ", "እስከ ከነዓን ዳርቻ", "እስከ ዮርዳኖስ ዙሪያ"], c: 1 },
+            { q: "ቃየን አቤልን ከገደለው በኋላ እግዚአብሔር 'ወንድምህ አቤል ወዴት ነው?' ሲለው የቃየን ምላሽ ምን ነበር?", a: ["አላውቅም፤ እኔ የወንድሜ ጠባቂው ነኝን?", "መሬት ውስጥ ቀብሬዋለሁ", "ወደ ጫካ ሄዷል", "ይቅርታ አድርግልኝ"], c: 0 },
             { q: "ቃየን ከእግዚአብሔር ፊት ወጥቶ ከዔድን በስተምሥራቅ በየትኛው ምድር ተቀመጠ?", a: ["በከነዓን ምድር", "በኖድ ምድር", "በግብፅ ምድር", "በሱር ምድር"], c: 1 },
-            { q: "አቤል ከተገደለ በኋላ ቃየን በአቤል ምትክ ያገኙትና 'እግዚአብሔር ሌላ ዘር ተካ meng' ያሉበት ልጅ ማን ይባላል?", a: ["ሄኖክ", "Ref (ሴት)", "ማቱሳላ", "ላሜሕ"], c: 1 },
+            { q: "የቃየን ሰባተኛ ትውልድ የሆነው ላሜሕ ለሁለቱ ሚስቶቹ ለአዳና ለሴላ የገጠመው ግጥም ወይም የተናገረው ቃል ምን ነበር?", a: ["ስለ መወጋቴ ገድየዋለሁ", "ምድርን ሁሉ እገዛታለሁ", "ከቃየን ይልቅ ጻድቅ ነኝ", "እግዚአብሔር ማረኝ"], c: 0 },
             { q: "የሴት ልጅ የሆነው ሄኖስ በተወለደ ጊዜ በምድር ላይ ምን መደረግ ተጀመረ?", a: ["መሥዋዕት ማቅረብ", "በእግዚአብሔር ስም መጥራት", "ከተማ መሥራት", "ጦርነት መጀመር"], c: 1 },
-            { q: "ከሞት በቀጥታ ተሰውሮ 'ከእግዚአብሔር ጋር አካሄዱን አደረገ፥ እግዚአብሔርም ወስዶታልና አልተገኘም' የተባለው አባት ማን ነው?", a: ["ላሜሕ", "ሄኖክ", "ቃየን", "ማቱሳላ"], c: 1 },
-            { q: "በመጽሐፍ ቅዱስ ታሪክ ውስጥ ረጅም ዕድሜ የኖረውና 969 ዓመት የኖረው ሰው ማን ይባላል?", a: ["ያሬድ", "ማቱሳላ", "ኖኅ", "አዳም"], c: 1 },
+            { q: "ኖኅ መርከብ ውስጥ በገባ በስንተኛው ቀን ነው የጥፋት ውኃ ምንጮች ተሰንጥቀው የሰማይ መስኮቶች የተከፈቱት?", a: ["በመጀመሪያው ቀን", "በሦስተኛው ቀን", "በሰባተኛው ቀን", "በአሥረኛው ቀን"], c: 2 },
+            { q: "በመጽሐፍ ቅዱስ ታሪክ 969 ዓመት የኖረው ሰው ማን ይባላል?", a: ["ያሬድ", "ማቱሳላ", "ኖኅ", "አዳም"], c: 1 },
             { q: "እግዚአብሔር በኖኅ ዘመን የሰውን ክፋት አይቶ ሰውን በመፍጠሩ የተሰማው ስሜት ምንድን ነው?", a: ["በልቡ አዘነ፥ ተጸጸተም", "እጅግ ተቆጣ", "ምድርን ወዲያው አጠፋት", "ዝም አለ"], c: 0 },
             { q: "እግዚአብሔር ኖኅን የጥፋት ውኃ ሳይመጣ በፊት መርከቧን ከምን እንጨት እንዲሠራ አዘዘው?", a: ["ከዝግባ እንጨት", "ከጎፈር እንጨት", "ከወይራ እንጨት", "ከእርክ እንጨት"], c: 1 },
             { q: "በኖኅ መርከብ ውስጥ ከጥፋት ውኃ የዳኑት የሰው ነፍሳት ብዛት ስንት ነበር?", a: ["3 ነፍስ", "7 ነፍስ", "8 ነፍስ", "12 ነፍስ"], c: 2 },
@@ -194,14 +194,14 @@
             let phoneError = document.getElementById("phone-error-msg");
             let resultBox = document.getElementById("resultBox");
             
-            // የህብረት ስም ማረጋገጫ
-            if (groupName !== "ካቦድ") {
+            // የፈተናው ክፍል ማረጋገጫ (ዘፍጥረት 1-15)
+            if (groupName !== "ዘፍጥረት 1-15") {
                 groupError.classList.remove('hidden');
                 setTimeout(() => { groupError.classList.add('hidden'); }, 3000);
                 return false;
             }
             
-            // የስልክ ቁጥር ማረጋገጫ (በ09 መጀመር አለበት እና ልክ 10 አሃዝ መሆን አለበት)
+            // የስልክ ቁጥር ማረጋገጫ
             let phoneRegex = /^09\d{8}$/;
             if (!phoneRegex.test(phoneNum)) {
                 phoneError.classList.remove('hidden');
@@ -233,7 +233,7 @@
             clearInterval(registrationTimer);
             registrationTimer = setInterval(() => {
                 timeLeftReg--;
-                document.getElementById("countdown-timer").innerText = `코ዱን ለመቅዳት የቀረው ጊዜ፡ ${timeLeftReg} ሰከንድ`;
+                document.getElementById("countdown-timer").innerText = `ኮዱን ለመቅዳት የቀረው ጊዜ፡ ${timeLeftReg} ሰከንድ`;
                 
                 if (timeLeftReg <= 0) {
                     clearInterval(registrationTimer);
@@ -329,7 +329,7 @@
                 document.getElementById('timer').innerText = timeLeft + "s";
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    autoMoveToNext(); // ጊዜ ሲያልቅ በራሱ እንዲሸጋገር ያደርጋል
+                    autoMoveToNext();
                 }
             }, 1000);
 
@@ -388,7 +388,6 @@
                 buttons[correctIndex].className = "w-full text-left px-5 py-3.5 bg-emerald-950/80 border-2 border-emerald-500 text-emerald-300 font-bold rounded-xl transition-all";
             }
 
-            // ጊዜ ሲያልቅ በራሱ 0.5 ሰከንድ ቆይቶ ወደ ቀጣዩ ጥያቄ እንዲያልፍ ተደርጓል
             setTimeout(() => {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < questions.length) { showQuestion(); } else { endQuiz(); }
@@ -408,7 +407,7 @@
             // 1. መረጃውን ወደ EmailJS መላክ
             emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 student_name: emailStudentNameFormat,
-                score: `${score} / 30 (ህብረት: ${groupName} | ድርሻ: ${role})`,
+                score: `${score} / 30 (የፈተናው ክፍል: ${groupName} | ድርሻ: ${role})`,
                 feedback: "አስተያየት አልተሰጠም (የመጀመሪያ ውጤት መላኪያ)"
             });
 
@@ -460,7 +459,7 @@
 
             emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 student_name: emailStudentNameFormat,
-                score: `${score} / 30 (ህብረት: ${document.getElementById('reg_group_name').value} | ድርሻ: ${document.getElementById('reg_role').value})`,
+                score: `${score} / 30 (የፈተናው ክፍል: ${document.getElementById('reg_group_name').value} | ድርሻ: ${document.getElementById('reg_role').value})`,
                 feedback: fbText
             }).then(() => {
                 alert("አስተያየትዎ በተሳካ ሁኔታ ተልኳል! እናመሰግናለን።");

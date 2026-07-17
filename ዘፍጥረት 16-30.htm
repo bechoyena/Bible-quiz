@@ -255,7 +255,7 @@
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(generatedSystemCode).then(() => {
                     let copyBtn = document.getElementById("copyBtn");
-                    copyBtn.innerHTML = "<span>ቀድተዋል ✔</span>";
+                    copyBtn.innerHTML = "<span>✔</span>";
                     copyBtn.className = "bg-emerald-600 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1";
                     
                     setTimeout(proceedToVerification, 1000);

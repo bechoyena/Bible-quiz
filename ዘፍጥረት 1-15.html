@@ -38,7 +38,7 @@
                     <div id="group-error-msg" class="hidden text-rose-400 font-bold text-xs mt-1 bg-rose-950/50 p-2 rounded border border-rose-800/50">የተሳሳተ መረጃ! የፈተናው ክፍል 'ዘፍጥረት 1-15' መሆን አለበት።</div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-300 mb-1">3. በፈተናው ክፍል ውስጥ ያለው ድርሻ</label>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1">3. በህብረቱ ውስጥ ያለው ድርሻ</label>
                     <input type="text" id="reg_role" required class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="ምሳሌ፡ አስተባባሪ፣ አባል...">
                 </div>
                 <div>
@@ -113,7 +113,7 @@
             <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-left max-w-md mx-auto space-y-2 text-sm text-slate-200">
                 <p><span class="font-semibold text-slate-400">የተፈታኝ ስም:</span> <span id="res-name" class="font-bold text-slate-100"></span></p>
                 <p><span class="font-semibold text-slate-400">የፈተናው ክፍል:</span> <span id="res-group" class="font-bold text-slate-100"></span></p>
-                <p><span class="font-semibold text-slate-400">በፈተናው ክፍል ያለዎት ድርሻ:</span> <span id="res-role" class="font-bold text-slate-100"></span></p>
+                <p><span class="font-semibold text-slate-400">በህብረቱ ውስጥ ያለዎት ድርሻ:</span> <span id="res-role" class="font-bold text-slate-100"></span></p>
             </div>
 
             <div class="text-2xl font-bold mt-4 text-slate-200">
@@ -255,7 +255,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(generatedSystemCode).then(() => {
                     let copyBtn = document.getElementById("copyBtn");
-                    copyBtn.innerHTML = "<span>ቀድተዋል ✔</span>";
+                    copyBtn.innerHTML = "<span>✔</span>";
                     copyBtn.className = "bg-emerald-600 text-white text-xs font-bold py-1.5 px-3 rounded shadow flex items-center space-x-1";
                     
                     setTimeout(proceedToVerification, 1000);

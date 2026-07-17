@@ -8,6 +8,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-8">
 
+    <!-- የመግቢያ ገጽ (Login Screen) -->
     <div id="login-screen" class="fixed inset-0 bg-slate-950 flex items-center justify-center z-50">
         <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center space-y-4">
             <h2 class="text-2xl font-bold text-indigo-400">የውጤት መቆጣጠሪያ ገጽ</h2>
@@ -18,7 +19,10 @@
         </div>
     </div>
 
+    <!-- ዋናው የዳሽቦርድ ይዘት (Dashboard Content) -->
     <div id="dashboard-content" class="max-w-6xl mx-auto space-y-6 hidden">
+        
+        <!-- የራስጌ ክፍል (Header) -->
         <div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 p-6 rounded-2xl border border-slate-700 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold text-white">የተፈታኞች ውጤት መመዝገቢያ ገጽ</h1>
@@ -32,6 +36,7 @@
             </div>
         </div>
 
+        <!-- የስታቲስቲክስ ካርዶች (Stats Cards) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center transition duration-200">
                 <div id="stat-label-total" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ጠቅላላ የተፈታኞች ብዛት</div>
@@ -47,14 +52,49 @@
             </div>
         </div>
 
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+        <!-- 1. ዋናው ገጽ (የቀናት ዝርዝር ሰንጠረዥ) -->
+        <div id="main-list-view" class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
             <div class="p-3 bg-slate-750 border-b border-slate-700 text-xs text-indigo-300 font-medium">
-                💡 ማሳሰቢያ፦ የአንድን ተማሪ የተለየ ውጤትና ፐርሰንት ለማየት የተማሪውን ስም ወይም መስመር ይጫኑ።
+                💡 ማሳሰቢያ፦ የዕለቱን ዝርዝር የተፈታኞች ስምና ውጤት በዝርዝር ለመመልከት የፈተናውን ቀን ይጫኑ።
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-700/50 text-slate-300 text-sm font-semibold border-b border-slate-700">
+                            <th class="p-4 text-center">ተ.ቁ</th>
+                            <th class="p-4">የፈተና ቀን</th>
+                            <th class="p-4 text-center">የተፈታኝ ብዛት</th>
+                            <th class="p-4 text-center">የዕለቱ ከፍተኛ ውጤት</th>
+                            <th class="p-4">ኮድ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scores-table-body" class="text-slate-200 text-sm divide-y divide-slate-700/50">
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-slate-500 font-medium">ውጤቶችን በመጫን ላይ... እባክዎ ይጠብቁ...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. የዝርዝር ገጽ (ቀን ሲነካ የሚተካው ገጽ) -->
+        <div id="detail-view" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl space-y-2">
+            <div class="p-4 bg-slate-750 border-b border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <div class="flex items-center space-x-3">
+                    <!-- ወደ ኋላ መመለሻ ቁልፍ -->
+                    <button onclick="goBackToMainList()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-1.5 px-3.5 rounded-xl text-sm transition flex items-center space-x-1">
+                        <span>⬅️ ተመለስ</span>
+                    </button>
+                    <h2 class="text-lg font-bold text-indigo-400">📅 የዕለቱ የተፈታኞች ዝርዝር (<span id="detail-selected-date" class="text-emerald-400"></span>)</h2>
+                </div>
+                <div class="text-xs text-indigo-300 font-medium">
+                    💡 ማሳሰቢያ፦ የተማሪውን የግል ውጤት በካርዶቹ ላይ ለማየት የተማሪውን ስም ይጫኑ።
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-700/30 text-slate-300 text-sm font-semibold border-b border-slate-700">
                             <th class="p-4 text-center">ተ.ቁ</th>
                             <th class="p-4">የተፈታኝ ስም</th>
                             <th class="p-4">የመፈተኛ ኮድ</th>
@@ -63,14 +103,13 @@
                             <th class="p-4">የተፈተኑበት ሰዓት</th>
                         </tr>
                     </thead>
-                    <tbody id="scores-table-body" class="text-slate-200 text-sm divide-y divide-slate-700/50">
-                        <tr>
-                            <td colspan="6" class="p-8 text-center text-slate-500 font-medium">ውጤቶችን በመጫን ላይ... እባክዎ ይጠብቁ...</td>
-                        </tr>
+                    <tbody id="detail-table-body" class="text-slate-200 text-sm divide-y divide-slate-700/50">
+                        <!-- ዝርዝሮች በጃቫስክሪፕት ይሞላሉ -->
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 
     <script>
@@ -78,6 +117,7 @@
         const ADMIN_PASS = "KABOD2026"; 
 
         let allStudentsData = []; 
+        let groupedScoresByDate = {}; // በቀን የተቧደኑ መረጃዎች
 
         function checkAdminLogin() {
             let passInput = document.getElementById("admin-password").value;
@@ -97,15 +137,24 @@
             document.getElementById("admin-password").value = "";
             document.getElementById("login-screen").classList.remove("hidden");
             document.getElementById("dashboard-content").classList.add("hidden");
+            goBackToMainList();
+        }
+
+        function getFormattedDate(timestamp) {
+            if (!timestamp) return "ያልታወቀ ቀን";
+            try {
+                let parsedDate = new Date(timestamp);
+                if (isNaN(parsedDate.getTime())) return "ያልታወቀ ቀን";
+                return parsedDate.toLocaleDateString('am-ET', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch(e) {
+                return "ያልታወቀ ቀን";
+            }
         }
 
         function fetchScores() {
-            document.getElementById("stat-label-total").innerText = "ጠቅላላ የተፈታኞች ብዛት";
-            document.getElementById("stat-label-highest").innerText = "ከፍተኛ ውጤት";
-            document.getElementById("stat-label-average").innerText = "አማካይ ውጤት (%)";
-
+            goBackToMainList();
             const tableBody = document.getElementById("scores-table-body");
-            tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-indigo-400 font-medium">በመጫን ላይ... እባክዎ ይጠብቁ...</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-indigo-400 font-medium">በመጫን ላይ... እባክዎ ይጠብቁ...</td></tr>`;
             
             fetch(GOOGLE_SCRIPT_URL)
             .then(response => {
@@ -116,105 +165,201 @@
                 tableBody.innerHTML = "";
                 
                 if(!data || data.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">እስካሁን የተመዘገበ ተማሪ የለም።</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">እስካሁን የተመዘገበ ተማሪ የለም።</td></tr>`;
                     return;
                 }
 
                 data.reverse();
                 allStudentsData = data; 
+                groupedScoresByDate = {};
 
-                let totalStudents = data.length;
-                let highestScoreNum = 0;
-                let highestScoreFullString = "0";
-                let totalPercentageSum = 0; // የፐርሰንቶች ድምር በአማካይ ለማስላት
+                // መረጃዎችን በቀን መመደብ
+                data.forEach(student => {
+                    let dateStr = getFormattedDate(student.timestamp);
+                    if (!groupedScoresByDate[dateStr]) {
+                        groupedScoresByDate[dateStr] = [];
+                    }
+                    groupedScoresByDate[dateStr].push(student);
+                });
+
+                updateMainStats(data); // የአጠቃላይ ዳሽቦርድ ስታቲስቲክስ ማዘመኛ
+
                 let tableContent = "";
+                let dateKeys = Object.keys(groupedScoresByDate);
+                
+                dateKeys.forEach((dateKey, index) => {
+                    let dayStudents = groupedScoresByDate[dateKey];
+                    let dayExamineesCount = dayStudents.length;
+                    
+                    let dayHighestScoreNum = -1;
+                    let dayHighestScoreString = "0";
+                    let dayHighestScoreCode = "---";
 
-                data.forEach((student, index) => {
-                    let name = student.student_name || student.name || "ያልታወቀ ስም";
-                    let code = student.exam_code || student.code || "---";
-                    let scoreRaw = student.score !== undefined ? String(student.score) : "0";
-                    let group = student.group_name || student.group || "---";
-                    let role = student.role || "";
-                    
-                    // ውጤት እና ጠቅላላ ጥያቄ መለየት (ምሳሌ "25/30")
-                    let parts = scoreRaw.split('/');
-                    let numericScore = parseInt(parts[0]) || 0;
-                    let totalQuestions = parts[1] ? parseInt(parts[1]) : 30; // ከሌለ default 30
-                    
-                    // የዚህን ተማሪ ፐርሰንት ማሰላት
-                    let studentPercentage = (numericScore / totalQuestions) * 100;
-                    totalPercentageSum += studentPercentage;
-                    
-                    if(numericScore >= highestScoreNum) {
-                        highestScoreNum = numericScore;
-                        highestScoreFullString = scoreRaw; 
-                    }
+                    dayStudents.forEach(student => {
+                        let scoreRaw = student.score !== undefined ? String(student.score) : "0";
+                        let parts = scoreRaw.split('/');
+                        let numericScore = parseInt(parts[0]) || 0;
 
-                    let dateStr = "---";
-                    if (student.timestamp) {
-                        try {
-                            let parsedDate = new Date(student.timestamp);
-                            if (!isNaN(parsedDate.getTime())) {
-                                dateStr = parsedDate.toLocaleString('am-ET', { hour12: true });
-                            } else {
-                                dateStr = student.timestamp;
-                            }
-                        } catch(e) {
-                            dateStr = student.timestamp;
+                        if (numericScore > dayHighestScoreNum) {
+                            dayHighestScoreNum = numericScore;
+                            dayHighestScoreString = scoreRaw;
+                            dayHighestScoreCode = student.exam_code || student.code || "---";
                         }
-                    }
+                    });
 
                     tableContent += `
-                        <tr onclick="showSingleStudentStats(${index}, this)" class="student-row hover:bg-slate-700/40 transition cursor-pointer">
+                        <tr onclick="showDayDetails('${dateKey}')" class="hover:bg-slate-700/40 transition cursor-pointer">
                             <td class="p-4 text-slate-500 font-bold text-center">${index + 1}</td>
-                            <td class="p-4 font-bold text-indigo-300 hover:text-indigo-200">${name}</td>
-                            <td class="p-4"><span class="bg-indigo-900/50 text-indigo-300 border border-indigo-700/50 px-2 py-1 rounded font-mono text-xs">${code}</span></td>
-                            <td class="p-4"><span class="text-emerald-400 font-black text-base">${scoreRaw}</span></td>
-                            <td class="p-4 text-slate-400 text-xs">${group} ${role ? '('+role+')' : ''}</td>
-                            <td class="p-4 text-slate-500 text-xs">${dateStr}</td>
+                            <td class="p-4 font-bold text-indigo-300 hover:text-indigo-200 flex items-center space-x-1">
+                                2026 <span>${dateKey}</span>
+                            </td>
+                            <td class="p-4 text-center font-bold text-slate-300">${dayExamineesCount} ተማሪዎች</td>
+                            <td class="p-4 text-center"><span class="text-emerald-400 font-black text-base">${dayHighestScoreString}</span></td>
+                            <td class="p-4"><span class="bg-indigo-900/50 text-indigo-300 border border-indigo-700/50 px-2 py-1 rounded font-mono text-xs">${dayHighestScoreCode}</span></td>
                         </tr>
                     `;
                 });
 
                 tableBody.innerHTML = tableContent;
-
-                // አጠቃላይ ስታቲስቲክስ ማዘመን
-                document.getElementById("stat-total").innerText = totalStudents;
-                document.getElementById("stat-highest").innerText = highestScoreFullString;
-                
-                // የክፍሉን አማካይ ፐርሰንት ማስቀመጥ (ያለ % ምልክት)
-                let classAveragePercent = totalPercentageSum / totalStudents;
-                document.getElementById("stat-average").innerText = classAveragePercent.toFixed(1);
             })
             .catch(error => {
                 console.error(error);
-                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-rose-500 font-medium">ውጤት ማምጣት አልተቻለም።</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-rose-500 font-medium">ውጤት ማምጣት አልተቻለም።</td></tr>`;
             });
         }
 
-        function showSingleStudentStats(index, rowElement) {
-            document.querySelectorAll('.student-row').forEach(row => row.classList.remove('bg-indigo-950/60', 'border-l-4', 'border-indigo-500'));
-            rowElement.classList.add('bg-indigo-950/60', 'border-l-4', 'border-indigo-500');
+        // ዋናውን ስታቲስቲክስ በአጠቃላይ መረጃዎች መሙላት
+        function updateMainStats(data) {
+            let totalStudents = data.length;
+            let highestScoreNum = 0;
+            let highestScoreFullString = "0";
+            let totalPercentageSum = 0;
 
-            let student = allStudentsData[index];
-            let name = student.student_name || student.name || "ያልታወቀ ስም";
-            let scoreRaw = student.score !== undefined ? String(student.score) : "0";
+            data.forEach(student => {
+                let scoreRaw = student.score !== undefined ? String(student.score) : "0";
+                let parts = scoreRaw.split('/');
+                let numericScore = parseInt(parts[0]) || 0;
+                let totalQuestions = parts[1] ? parseInt(parts[1]) : 30;
+                
+                let studentPercentage = (numericScore / totalQuestions) * 100;
+                totalPercentageSum += studentPercentage;
 
-            // የካርድ መግለጫዎችን መቀየር
-            document.getElementById("stat-label-total").innerText = "የተመረጠው ተማሪ";
-            document.getElementById("stat-label-highest").innerText = "የተማሪው ውጤት";
-            document.getElementById("stat-label-average").innerText = "የተማሪው ውጤት (%)";
+                if(numericScore >= highestScoreNum) {
+                    highestScoreNum = numericScore;
+                    highestScoreFullString = scoreRaw; 
+                }
+            });
 
-            // ከተማሪው ውጤት ላይ ፐርሰንት ማሰላት
+            document.getElementById("stat-label-total").innerText = "ጠቅላላ የተፈታኞች ብዛት";
+            document.getElementById("stat-label-highest").innerText = "ከፍተኛ ውጤት";
+            document.getElementById("stat-label-average").innerText = "አማካይ ውጤት (%)";
+
+            document.getElementById("stat-total").innerText = totalStudents;
+            document.getElementById("stat-highest").innerText = highestScoreFullString;
+            
+            let classAveragePercent = totalPercentageSum / totalStudents;
+            document.getElementById("stat-average").innerText = isNaN(classAveragePercent) ? "0" : classAveragePercent.toFixed(1);
+        }
+
+        // የተመረጠውን ተማሪ የግል ውጤት በስታቲስቲክስ ካርዶች ላይ ማሳያ
+        function showStudentStats(studentName, scoreRaw) {
             let parts = scoreRaw.split('/');
             let numericScore = parseInt(parts[0]) || 0;
             let totalQuestions = parts[1] ? parseInt(parts[1]) : 30;
-            let singleStudentPercent = (numericScore / totalQuestions) * 100;
+            let studentPercentage = (numericScore / totalQuestions) * 100;
 
-            document.getElementById("stat-total").innerText = name;
+            document.getElementById("stat-label-total").innerText = "የተመረጠው ተማሪ ስም";
+            document.getElementById("stat-label-highest").innerText = "የተማሪው ውጤት";
+            document.getElementById("stat-label-average").innerText = "የተማሪው ውጤት (%)";
+
+            document.getElementById("stat-total").innerText = studentName;
             document.getElementById("stat-highest").innerText = scoreRaw;
-            // የተማሪውን የግል ፐርሰንት ማሳየት (ያለ % ምልክት)
-            document.getElementById("stat-average").innerText = singleStudentPercent.toFixed(1);
+            document.getElementById("stat-average").innerText = isNaN(studentPercentage) ? "0" : studentPercentage.toFixed(1);
+            
+            // ወደ ላይ በቀስታ ይውሰደው
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ቀን ሲጫን ዋናውን ዝርዝር ደብቆ "የዕለቱ ዝርዝር ገጽ" መተካት
+        function showDayDetails(dateKey) {
+            const dayStudents = groupedScoresByDate[dateKey] || [];
+            document.getElementById("detail-selected-date").innerText = dateKey;
+            
+            const detailTableBody = document.getElementById("detail-table-body");
+            detailTableBody.innerHTML = "";
+
+            let totalPercentageSum = 0;
+            let highestScoreNum = 0;
+            let highestScoreFullString = "0";
+
+            dayStudents.forEach((student, index) => {
+                let name = student.student_name || student.name || "ያልታወቀ ስም";
+                let code = student.exam_code || student.code || "---";
+                let scoreRaw = student.score !== undefined ? String(student.score) : "0";
+                let group = student.group_name || student.group || "---";
+                let role = student.role || "";
+
+                let parts = scoreRaw.split('/');
+                let numericScore = parseInt(parts[0]) || 0;
+                let totalQuestions = parts[1] ? parseInt(parts[1]) : 30;
+                totalPercentageSum += (numericScore / totalQuestions) * 100;
+
+                if (numericScore >= highestScoreNum) {
+                    highestScoreNum = numericScore;
+                    highestScoreFullString = scoreRaw;
+                }
+
+                let timeStr = "---";
+                if (student.timestamp) {
+                    try {
+                        let parsedDate = new Date(student.timestamp);
+                        if (!isNaN(parsedDate.getTime())) {
+                            timeStr = parsedDate.toLocaleTimeString('am-ET', { hour: 'numeric', minute: '2-digit', hour12: true });
+                        }
+                    } catch(e) {
+                        timeStr = student.timestamp;
+                    }
+                }
+
+                // ስሙ ሲነካ የግል ውጤቱን እንዲያሳይ የ onclick ክስተት ተጨምሯል
+                let safeName = name.replace(/'/g, "\\'");
+                detailTableBody.innerHTML += `
+                    <tr class="hover:bg-slate-700/20 transition">
+                        <td class="p-4 text-slate-500 font-bold text-center">${index + 1}</td>
+                        <td class="p-4 font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer transition" onclick="showStudentStats('${safeName}', '${scoreRaw}')">👤 ${name}</td>
+                        <td class="p-4"><span class="bg-indigo-900/50 text-indigo-300 border border-indigo-700/50 px-2.5 py-1.5 rounded-lg font-mono text-xs">${code}</span></td>
+                        <td class="p-4"><span class="text-emerald-400 font-black text-base">${scoreRaw}</span></td>
+                        <td class="p-4 text-slate-400 text-xs">${group} ${role ? '('+role+')' : ''}</td>
+                        <td class="p-4 text-slate-500 text-xs">${timeStr}</td>
+                    </tr>
+                `;
+            });
+
+            // የላይኛውን ስታቲስቲክስ ለተመረጠው ቀን ብቻ ማስተካከል
+            document.getElementById("stat-label-total").innerText = `የዕለቱ የተፈታኝ ብዛት`;
+            document.getElementById("stat-label-highest").innerText = `የዕለቱ ከፍተኛ ውጤት`;
+            document.getElementById("stat-label-average").innerText = `የዕለቱ አማካይ ውጤት (%)`;
+
+            document.getElementById("stat-total").innerText = `${dayStudents.length} ተማሪዎች`;
+            document.getElementById("stat-highest").innerText = highestScoreFullString;
+            
+            let dayAveragePercent = totalPercentageSum / dayStudents.length;
+            document.getElementById("stat-average").innerText = isNaN(dayAveragePercent) ? "0" : dayAveragePercent.toFixed(1);
+
+            // ገጾችን ማጋለጥ እና መደበቅ
+            document.getElementById("main-list-view").classList.add("hidden");
+            document.getElementById("detail-view").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ወደ ዋናው ገጽ መመለሻ
+        function goBackToMainList() {
+            document.getElementById("detail-view").classList.add("hidden");
+            document.getElementById("main-list-view").classList.remove("hidden");
+            
+            if (allStudentsData.length > 0) {
+                updateMainStats(allStudentsData);
+            }
         }
     </script>
 </body>
